@@ -1,0 +1,44 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebApplication6.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - AmiriSite</title>
+    <script src="https://kit.fontawesome.com/0c8cb0c4e9.js" crossorigin="anonymous"></script>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="~/Styles/master.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+   <form id="form1" runat="server">
+        <nav class ="nav">
+            <a class="nav-title" href="/">AmiriSite</a>
+            <ul>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="About">About</a></li>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="Contact">Contact</a></li>
+            </ul>
+            <%
+                bool loggedIn = false;
+                if (Session["login"] != null && (bool)Session["login"]) loggedIn = true;
+            %>
+            <a class="nav-username" href="<%: (!loggedIn) ? "Login" : "" %>"><%:loggedIn ? Session["username"]:"Login" %></a>
+        </nav>
+        <hr />
+        <div class="container body-content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+            <footer>
+                <hr />
+                <p><%: DateTime.Now.Year %> - AmiriSite</p>
+            </footer>
+        </div>
+    </form>
+</body>
+</html>

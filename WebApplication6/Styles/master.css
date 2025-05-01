@@ -1,0 +1,60 @@
+﻿body {
+    background-color: #1a1b1b;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+}
+
+.nav-title,
+.nav-username {
+    font-size: 30px;
+    color: white;
+    text-decoration: none;
+    font-family: Roboto, sans-serif;
+}
+
+.nav-title:hover,
+.nav-username:hover {
+    color: #d6dce1;
+}
+
+.nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.nav-crumb {
+    padding: 10px;
+}
+
+.nav-crumb-text {
+    font-size: 25px;
+    color: white;
+    text-decoration: none;
+    font-family: Roboto, sans-serif;
+}
+
+.nav-crumb-text:hover {
+    color: #d6dce1;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 5px 0;
+}
+
+footer p {
+    color: white;
+    font-family: Roboto, sans-serif;
+    text-align: center;
+}

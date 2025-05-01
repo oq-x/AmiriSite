@@ -1,0 +1,65 @@
+﻿#title {
+    font-family: Roboto, sans-serif;
+    text-align: center;
+    color: white;
+}
+
+.form {
+    margin: 0 auto;
+    width: 30%;
+    background-color: #393939;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.form label {
+    font-size: 25px;
+    color: white;
+    font-family: Roboto, sans-serif;
+    margin: 10px;
+}
+
+.form #submit {
+    display: block;
+    margin: 10px auto 0 auto;
+    width: 30%;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background-color: #0093ff;
+    transition: 0.2s;
+}
+.form #submit:hover {
+    color: #0093ff;
+    background-color: white;
+}
+.form .input {
+    display: block;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin: 10px auto;
+    width: 80%;
+    outline: none;
+}
+.form p {
+    color: white;
+    font-family: Roboto, sans-serif;
+    text-align: center;
+    font-size: 15px;
+}
+
+.form p a {
+    color: #0093ff;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.form p a:hover {
+    color: white;
+}
+
+

@@ -13,26 +13,21 @@ namespace WebApplication6
         {
             if (Request.Form["submit"] != null)
             {
-                switch (Request.Form["email"])
+                SiteMaster m = (SiteMaster)Master;
+                User user = m.dataManager.GetUser(Request.Form["email"]);
+                if (user == null)
                 {
-                    case "amiri@gmail.com":
-                        if (Request.Form["password"] == "amiripass")
-                        {
-                            Session["username"] = "amiri";
-                            Session["login"] = true;
-
-                            Session["error"] = null;
-
-                            Response.Redirect("/");
-                        } else
-                        {
-                            Session["error"] = "Wrong password!";
-                        }
-                            break;
-                    default:
-                        Session["error"] = "Unknown user!";
-                        break;
+                    Session["error"] = "Unknown user!";
+                    return;
                 }
+                if (!user.IsPasswordEqual(Request.Form["password"]))
+                {
+                    Session["error"] = "Wrong password!";
+                    return;
+                }
+                Session["username"] = user.Username();
+                Session["login"] = true;
+                Response.Redirect("/");
             }
         }
     }

@@ -12,13 +12,15 @@ function login(e) {
         setError("")
     }
     const passwordInput = document.getElementById("password")
-    if (passwordInput.value = "") {
+    console.log(passwordInput.value)
+    if (passwordInput.value == "") {
         setError("No password provided!")
         e.preventDefault()
     } else {
         setError("")
     }
 }
+
 /**
  * Set the error text
  * @param {String} text

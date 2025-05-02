@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
-using System.Dynamic;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -20,18 +20,20 @@ namespace WebApplication6
         public void CreateUser(User user)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO users (email, username, password, bio, firstName, lastName, score, pfpLink)
-                         VALUES (@Email, @Username, @Password, @Bio, @FirstName, @LastName, @Score, @PFPLink)";
+            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token)
+                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
-            cmd.Parameters.AddWithValue("@Email", user.Email());
-            cmd.Parameters.AddWithValue("@Username", user.Username());
-            cmd.Parameters.AddWithValue("@Password", user.PasswordHash());
+            cmd.Parameters.AddWithValue("@UUID", user.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Email", user.Email);
+            cmd.Parameters.AddWithValue("@Username", user.Username);
+            cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash());
+            cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", user.LastName);
             cmd.Parameters.AddWithValue("@Bio", user.Bio());
-            cmd.Parameters.AddWithValue("@FirstName", user.FirstName());
-            cmd.Parameters.AddWithValue("@LastName", user.LastName());
             cmd.Parameters.AddWithValue("@Score", user.Score());
-            cmd.Parameters.AddWithValue("@PFPLink", user.AvatarURL());
+            cmd.Parameters.AddWithValue("@AvatarURL", user.AvatarURL());
+            cmd.Parameters.AddWithValue("@Token", user.Token());
 
             sql.Open();
             cmd.ExecuteNonQuery();
@@ -42,10 +44,38 @@ namespace WebApplication6
         {
             var parameters = new Dictionary<string, object>
     {
-        { "@email", email }
+        { "@Email", email }
     };
 
-            User[] results = getUsers("email = @email", parameters);
+            User[] results = getUsers("Email = @Email", parameters);
+            return results.Length > 0 ? results[0] : null;
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            var parameters = new Dictionary<string, object>
+    {
+        { "@Username", username }
+    };
+
+            User[] results = getUsers("Username = @Username", parameters);
+            return results.Length > 0 ? results[0] : null;
+        }
+
+        public User Authenticate(string token)
+        {
+            byte[] tokenBytes = new byte[token.Length / 2];
+            for (int i = 0; i < tokenBytes.Length; i++)
+            {
+                tokenBytes[i] = Convert.ToByte(token.Substring(i * 2, 2), 16);
+            }
+
+            var parameters = new Dictionary<string, object>
+    {
+        { "@Token", tokenBytes }
+    };
+
+            User[] results = getUsers("Token = @Token", parameters);
             return results.Length > 0 ? results[0] : null;
         }
 
@@ -88,14 +118,16 @@ namespace WebApplication6
                         DataRow row = userTable.Rows[i];
  
                         users[i] = new User(
-                            (string)row[userTable.Columns[0]],
-                            (string)row[userTable.Columns[1]],
-                            (string)row[userTable.Columns[2]],
-                            (string)row[userTable.Columns[6]],
-                            (string)row[userTable.Columns[3]],
-                            (string)row[userTable.Columns[4]],
-                            (string)row[userTable.Columns[7]],
-                            (double)row[userTable.Columns[5]]
+                            new Guid((byte[])(row[userTable.Columns[0]])),
+                            (string)(row[userTable.Columns[1]]),
+                            (string)(row[userTable.Columns[2]]),
+                            (byte[])(row[userTable.Columns[3]]),
+                            (string)(row[userTable.Columns[4]]),
+                            (string)(row[userTable.Columns[5]]),
+                            (string)(row[userTable.Columns[6]]),
+                            (string)(row[userTable.Columns[8]]),
+                            (byte[])(row[userTable.Columns[9]]),
+                            (double)(row[userTable.Columns[7]])
                         );
                     }
 
@@ -108,7 +140,7 @@ namespace WebApplication6
         {
             using (SqlConnection sql = new SqlConnection(_connectionString))
             {
-                string query = "SELECT 1 FROM Users WHERE email = @Email";
+                string query = "SELECT 1 FROM Users WHERE Email = @Email";
 
                 using (SqlCommand cmd = new SqlCommand(query, sql))
                 {
@@ -129,7 +161,7 @@ namespace WebApplication6
         {
             using (SqlConnection sql = new SqlConnection(_connectionString))
             {
-                string query = "SELECT 1 FROM Users WHERE username = @Username";
+                string query = "SELECT 1 FROM Users WHERE Username = @Username";
 
                 using (SqlCommand cmd = new SqlCommand(query, sql))
                 {
@@ -149,35 +181,74 @@ namespace WebApplication6
 
     public class User
     {
-        private readonly string email;
-        private readonly string username;
-        private string passwordHash;
+        public readonly Guid UUID;
+        public readonly string Email;
+        public readonly string Username;
+        private byte[] passwordHash;
         private string bio;
-        private readonly string firstName;
-        private readonly string lastName;
+        public readonly string FirstName;
+        public readonly string LastName;
 
         private string avatarURL;
         private double score;
 
-        public User(string email,
+        private readonly byte[] token;
+
+        public User(
+            string email, 
+            string username, 
+            string password, 
+            string firstName, 
+            string lastName
+            )
+        {
+            UUID = Guid.NewGuid();
+            Email = email;
+            Username = username;
+            SetPassword(password);
+            bio = "";
+            LastName = lastName;
+            FirstName = firstName;
+
+            avatarURL = "";
+            score = 0;
+
+            byte[] token = SHA256.Create().ComputeHash(UUID.ToByteArray());
+
+            // combine both the uuid and password (XOR)
+            for (int i = 0; i < token.Length; i++)
+            {
+                token[i] ^= passwordHash[i];
+            }
+
+            this.token = token;
+        }
+
+        public User(
+            Guid UUID,
+            string email,
             string username,
-            string passwordHash,
-            string bio,
+            byte[] passwordHash,
+
             string firstName,
             string lastName,
 
+            string bio,
             string avatarURL,
+            byte[] token,
             double score = 0
         )
         {
-            this.email = email;
-            this.username = username;
+            this.UUID = UUID;
+            Email = email;
+            Username = username;
             this.passwordHash = passwordHash;
             this.bio = bio;
-            this.firstName = firstName;
-            this.lastName = lastName;
+            FirstName = firstName;
+            LastName = lastName;
 
             this.avatarURL = avatarURL;
+            this.token = token;
             this.score = score;
         }
 
@@ -188,13 +259,7 @@ namespace WebApplication6
             byte[] rawBytes = Encoding.UTF8.GetBytes(password);
             byte[] hashBytes = sha256.ComputeHash(rawBytes);
 
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in hashBytes)
-                sb.Append(b.ToString("x2"));
-
-            string computedHash = sb.ToString();
-
-            passwordHash = computedHash;
+            passwordHash = hashBytes;
         }
 
         public void SetBio(string bio)
@@ -206,16 +271,11 @@ namespace WebApplication6
         {
             this.avatarURL = avatarURL;
         }
-
-        public string Email() { return email; }
-        public string Username() { return username; }
         public string Bio() { return bio; }
-        public string FirstName() { return firstName; }
-        public string LastName() { return lastName; }
         public double Score() { return score; }
         public string AvatarURL() { return avatarURL; }
 
-        public string PasswordHash() { return passwordHash; }
+        public byte[] PasswordHash() { return passwordHash; }
 
         public bool IsPasswordEqual(string password)
         {
@@ -223,25 +283,33 @@ namespace WebApplication6
             byte[] rawBytes = Encoding.UTF8.GetBytes(password);
             byte[] hashBytes = sha256.ComputeHash(rawBytes);
 
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in hashBytes)
+            return passwordHash.SequenceEqual(hashBytes);
+        }
+
+        public bool IsTokenEqual(string token)
+        {
+            return Token() == token;
+        }
+
+        public string Token() {
+            var sb = new StringBuilder(token.Length * 2);
+            foreach (byte b in token)
+            {
                 sb.Append(b.ToString("x2"));
-
-            string computedHash = sb.ToString();
-
-            return string.Equals(computedHash, passwordHash, StringComparison.OrdinalIgnoreCase);
+            }
+            return sb.ToString();
         }
 
         // Update the user's score
         public void UpdateScore(Message message)
         {
-            if (message == null || message.Sender() != email)
+            if (message == null || !message.SenderUUID.Equals(UUID))
             {
                 // message not from user
                 return;
             }
 
-            double i = (double)message.Content().Length / 20;
+            double i = (double)message.Content.Length / 20;
             i *= ((double)(new Random()).Next(0, 101)) / 100;
 
             score += (score * i) + i;
@@ -250,16 +318,17 @@ namespace WebApplication6
 
     public class Message
     {
-        private readonly string sender;
-        private readonly string content;
+        public readonly Guid UUID;
+        public readonly Guid SenderUUID;
+        public readonly string Content;
+        public readonly DateTime CreatedAt;
 
-        public Message(string sender, string content)
+        public Message(Guid uuid, Guid senderUUID, string content, DateTime createdAt)
         {
-            this.sender = sender;
-            this.content = content;
+            UUID = uuid;
+            SenderUUID = senderUUID;
+            Content = content;
+            CreatedAt = createdAt;
         }
-
-        public string Sender() { return sender; }
-        public string Content() { return content; }
     }
 }

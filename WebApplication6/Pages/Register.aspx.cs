@@ -41,26 +41,25 @@ namespace WebApplication6
                 }
 
                 SiteMaster m = (SiteMaster)Master;
-                bool existM = m.dataManager.UserExistByEmail(email);
+                bool existM = m.DataManager.UserExistByEmail(email);
                 if (existM)
                 {
                     Session["error"] = "This email is already taken!";
                     return;
                 }
 
-                bool existU = m.dataManager.UserExistByUsername(username);
+                bool existU = m.DataManager.UserExistByUsername(username);
                 if (existU)
                 {
                     Session["error"] = "This username is already taken!";
                     return;
                 }
 
-                User user = new User(email, username, "", "", firstName, lastName, "");
-                user.SetPassword(password);
+                User user = new User(email, username, password, firstName, lastName);
 
-                m.dataManager.CreateUser(user);
+                m.DataManager.CreateUser(user);
 
-                Session["username"] = username;
+                Session["token"] = user.Token();
                 Session["login"] = true;
                 Response.Redirect("/");
             }

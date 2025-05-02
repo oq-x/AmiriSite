@@ -1,0 +1,33 @@
+﻿#title {
+    font-family: Roboto, sans-serif;
+    color: white;
+}
+
+.subtext {
+    font-family: Roboto, sans-serif;
+    color: white;
+}
+
+.subtext .bio {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.subtext .info {
+    display: block;
+    margin-top: 20px;
+}
+
+.userbox {
+    margin: 0 auto;
+    width: 30%;
+    background-color: #393939;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.infttl {
+    font-size: 16px;
+    font-weight: bold;
+}

@@ -24,11 +24,11 @@
                 <li class="nav-crumb"><a class="nav-crumb-text" href="About">About</a></li>
                 <li class="nav-crumb"><a class="nav-crumb-text" href="Contact">Contact</a></li>
             </ul>
+
             <%
-                bool loggedIn = false;
-                if (Session["login"] != null && (bool)Session["login"]) loggedIn = true;
+                WebApplication6.User currentUser = CurrentUser();
             %>
-            <a class="nav-username" href="<%: (!loggedIn) ? "Login" : "" %>"><%:loggedIn ? Session["username"]:"Login" %></a>
+            <a class="nav-username" href="<%: (currentUser == null) ? "Login" : "User?n="+currentUser.Username %>"><%:currentUser!=null ? currentUser.Username:"Login" %></a>
         </nav>
         <hr />
         <div class="container body-content">

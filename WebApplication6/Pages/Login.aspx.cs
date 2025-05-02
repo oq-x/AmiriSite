@@ -10,7 +10,7 @@ namespace WebApplication6
             if (Request.Form["submit"] != null)
             {
                 SiteMaster m = (SiteMaster)Master;
-                User user = m.dataManager.GetUser(Request.Form["email"]);
+                User user = m.DataManager.GetUser(Request.Form["email"]);
                 if (user == null)
                 {
                     Session["error"] = "Unknown user!";
@@ -21,7 +21,7 @@ namespace WebApplication6
                     Session["error"] = "Wrong password!";
                     return;
                 }
-                Session["username"] = user.Username();
+                Session["token"] = user.Token();
                 Session["login"] = true;
                 Response.Redirect("/");
             }

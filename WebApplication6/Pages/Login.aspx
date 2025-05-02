@@ -11,11 +11,11 @@
 
         <div class="form">
         <div runat="server">
-            <label for="email">Email</label><br/>
-            <input type="email" id="email" name="email" placeholder="name@example.com" class="input" oninput="setError('')"/><br />
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="name@example.com" class="input" oninput="setError('')"/>
 
-            <label for="password">Password</label><br />
-            <input type="password" id="password" name="password" class="input" placeholder="amirithekabanos" oninput="setError('')"/><br />
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="input" placeholder="amirithekabanos" oninput="setError('')"/>
 
             <p id="error" style="color: red;"><%:Session["error"] %></p>
             <% Session["error"] = null; %>

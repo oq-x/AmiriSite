@@ -1,0 +1,12 @@
+﻿.box {
+    display: flex;
+}
+
+.name .input {
+    width: 38%;
+}
+
+/*.box .input {
+    width: 30%;
+}
+    */

@@ -10,7 +10,7 @@ namespace WebApplication6
 {
     public class DataManager
     {
-        private string _connectionString;
+        private readonly string _connectionString;
 
         public DataManager(string connectionString)
         {
@@ -20,8 +20,8 @@ namespace WebApplication6
         public void CreateUser(User user)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO users (email, username, password, bio, firstName, lastName)
-                         VALUES (@Email, @Username, @Password, @Bio, @FirstName, @LastName)";
+            string query = @"INSERT INTO users (email, username, password, bio, firstName, lastName, score, pfpLink)
+                         VALUES (@Email, @Username, @Password, @Bio, @FirstName, @LastName, @Score, @PFPLink)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
             cmd.Parameters.AddWithValue("@Email", user.Email());
@@ -30,6 +30,8 @@ namespace WebApplication6
             cmd.Parameters.AddWithValue("@Bio", user.Bio());
             cmd.Parameters.AddWithValue("@FirstName", user.FirstName());
             cmd.Parameters.AddWithValue("@LastName", user.LastName());
+            cmd.Parameters.AddWithValue("@Score", user.Score());
+            cmd.Parameters.AddWithValue("@PFPLink", user.AvatarURL());
 
             sql.Open();
             cmd.ExecuteNonQuery();
@@ -51,7 +53,7 @@ namespace WebApplication6
         {
             return getUsers(null);
         }
-        public User[] getUsers(string whereClause = null, Dictionary<string, object> parameters = null)
+        private User[] getUsers(string whereClause = null, Dictionary<string, object> parameters = null)
         {
 
             using (SqlConnection sql = new SqlConnection(_connectionString))
@@ -84,20 +86,16 @@ namespace WebApplication6
                     for (int i = 0; i < users.Length; i++)
                     {
                         DataRow row = userTable.Rows[i];
-
-                        string bio = "";
-                        if (!Convert.IsDBNull(row[userTable.Columns[3]]))
-                        {
-                            bio = (string)row[userTable.Columns[3]];
-                        }
  
                         users[i] = new User(
                             (string)row[userTable.Columns[0]],
                             (string)row[userTable.Columns[1]],
                             (string)row[userTable.Columns[2]],
-                            bio,
+                            (string)row[userTable.Columns[6]],
+                            (string)row[userTable.Columns[3]],
                             (string)row[userTable.Columns[4]],
-                            (string)row[userTable.Columns[5]]
+                            (string)row[userTable.Columns[7]],
+                            (double)row[userTable.Columns[5]]
                         );
                     }
 
@@ -106,23 +104,70 @@ namespace WebApplication6
             }
 
         }
+        public bool UserExistByEmail(string email)
+        {
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT 1 FROM Users WHERE email = @Email";
+
+                using (SqlCommand cmd = new SqlCommand(query, sql))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "Users");
+
+                    DataTable userTable = dataSet.Tables[0];
+
+                    return userTable.Rows.Count > 0;
+                }
+            }
+        }
+
+        public bool UserExistByUsername(string username)
+        {
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT 1 FROM Users WHERE username = @Username";
+
+                using (SqlCommand cmd = new SqlCommand(query, sql))
+                {
+                    cmd.Parameters.AddWithValue("@Username", username);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "Users");
+
+                    DataTable userTable = dataSet.Tables[0];
+
+                    return userTable.Rows.Count > 0;
+                }
+            }
+        }
     }
 
     public class User
     {
-        private string email;
-        private string username;
+        private readonly string email;
+        private readonly string username;
         private string passwordHash;
         private string bio;
-        private string firstName;
-        private string lastName;
+        private readonly string firstName;
+        private readonly string lastName;
 
-        public User(string email, 
-            string username, 
-            string passwordHash, 
-            string bio, 
-            string firstName, 
-            string lastName
+        private string avatarURL;
+        private double score;
+
+        public User(string email,
+            string username,
+            string passwordHash,
+            string bio,
+            string firstName,
+            string lastName,
+
+            string avatarURL,
+            double score = 0
         )
         {
             this.email = email;
@@ -131,6 +176,9 @@ namespace WebApplication6
             this.bio = bio;
             this.firstName = firstName;
             this.lastName = lastName;
+
+            this.avatarURL = avatarURL;
+            this.score = score;
         }
 
         // this sets the password hash to the hash of the new password
@@ -149,11 +197,23 @@ namespace WebApplication6
             passwordHash = computedHash;
         }
 
+        public void SetBio(string bio)
+        {
+            this.bio = bio;
+        }
+
+        public void SetAvatarURL(string avatarURL)
+        {
+            this.avatarURL = avatarURL;
+        }
+
         public string Email() { return email; }
         public string Username() { return username; }
         public string Bio() { return bio; }
         public string FirstName() { return firstName; }
         public string LastName() { return lastName; }
+        public double Score() { return score; }
+        public string AvatarURL() { return avatarURL; }
 
         public string PasswordHash() { return passwordHash; }
 
@@ -171,12 +231,27 @@ namespace WebApplication6
 
             return string.Equals(computedHash, passwordHash, StringComparison.OrdinalIgnoreCase);
         }
+
+        // Update the user's score
+        public void UpdateScore(Message message)
+        {
+            if (message == null || message.Sender() != email)
+            {
+                // message not from user
+                return;
+            }
+
+            double i = (double)message.Content().Length / 20;
+            i *= ((double)(new Random()).Next(0, 101)) / 100;
+
+            score += (score * i) + i;
+        }
     }
 
     public class Message
     {
-        private string sender;
-        private string content;
+        private readonly string sender;
+        private readonly string content;
 
         public Message(string sender, string content)
         {

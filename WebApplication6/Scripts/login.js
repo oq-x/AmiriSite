@@ -12,7 +12,6 @@ function login(e) {
         setError("")
     }
     const passwordInput = document.getElementById("password")
-    console.log(passwordInput.value)
     if (passwordInput.value == "") {
         setError("No password provided!")
         e.preventDefault()

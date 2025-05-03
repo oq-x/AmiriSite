@@ -1,4 +1,4 @@
-﻿#title {
+﻿.title {
     font-family: Roboto, sans-serif;
     color: white;
 }
@@ -14,7 +14,7 @@
     margin-bottom: 20px;
 }
 
-.subtext .info {
+subtext .info {
     display: block;
     margin-top: 20px;
 }
@@ -30,4 +30,39 @@
 .infttl {
     font-size: 16px;
     font-weight: bold;
+}
+
+.channeltitle {
+    border-radius: 10px;
+    font-family: Roboto, sans-serif;
+    text-align: center;
+    color: white;
+}
+
+.channelbox {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+.channel {
+    background-color: #393939;
+    border-radius: 10px;
+    font-family: Roboto, sans-serif;
+    color: white;
+    padding: 15px;
+    width: 160px;
+}
+
+.channel .channelname {
+    font-family: Roboto, sans-serif;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.channel .channelname i {
+    padding: 5px;
 }

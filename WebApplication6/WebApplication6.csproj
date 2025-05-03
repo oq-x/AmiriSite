@@ -103,6 +103,7 @@
     <Content Include="App_Data\Database1_log.ldf">
       <DependentUpon>Database1.mdf</DependentUpon>
     </Content>
+    <Content Include="Pages\Channel.aspx" />
     <Content Include="Pages\Register.aspx" />
     <Content Include="Pages\User.aspx" />
     <Content Include="Scripts\login.js" />
@@ -135,6 +136,13 @@
       <DependentUpon>About.aspx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Pages\Channel.aspx.cs">
+      <DependentUpon>Channel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Channel.aspx.designer.cs">
+      <DependentUpon>Channel.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

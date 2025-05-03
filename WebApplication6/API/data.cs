@@ -81,7 +81,7 @@ namespace WebApplication6
 
         public User[] GetUsers()
         {
-            return getUsers(null);
+            return getUsers();
         }
         private User[] getUsers(string whereClause = null, Dictionary<string, object> parameters = null)
         {
@@ -174,6 +174,144 @@ namespace WebApplication6
                     DataTable userTable = dataSet.Tables[0];
 
                     return userTable.Rows.Count > 0;
+                }
+            }
+        }
+
+        // inserts the message into the database (unsafe so private [there can be another channel with the same uuid])
+        private void InsertMessage(Message message)
+        {
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = @"INSERT INTO Messages (UUID, SenderUUID, Content, CreatedAt, ChannelUUID)
+                         VALUES (@UUID, @SenderUUID, @Content, @CreatedAt, @ChannelUUID)";
+            SqlCommand cmd = new SqlCommand(query, sql);
+
+            cmd.Parameters.AddWithValue("@UUID", message.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@SenderUUID", message.SenderUUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Content", message.Content);
+            cmd.Parameters.AddWithValue("@CreatedAt", message.CreatedAt);
+            cmd.Parameters.AddWithValue("@ChannelUUID", message.ChannelUUID.ToByteArray());
+
+            sql.Open();
+            cmd.ExecuteNonQuery();
+            sql.Close();
+        }
+        
+        // inserts the channel into the database (unsafe too)
+        private void InsertChannel(Channel channel)
+        {
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = @"INSERT INTO Channels (UUID, OwnerUUID, Name)
+                         VALUES (@UUID, @OwnerUUID, @Name)";
+            SqlCommand cmd = new SqlCommand(query, sql);
+
+            cmd.Parameters.AddWithValue("@UUID", channel.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@OwnerUUID", channel.OwnerUUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Name", channel.Name);
+
+            sql.Open();
+            cmd.ExecuteNonQuery();
+            sql.Close();
+        }
+
+        // creates a new channel from the provided data and inserts it into the databse
+        public void CreateChannel(User owner, string name)
+        {
+            InsertChannel(new Channel(Guid.NewGuid(), owner.UUID, name));
+        }
+
+        // creates a new message from the provided data and inserts it into the database
+        public void PostMessage(Channel channel, User sender, string content)
+        {
+            InsertMessage(new Message(Guid.NewGuid(), sender.UUID, content, DateTime.Now, channel.UUID));
+        }
+        public Channel[] GetChannels(User owner)
+        {
+            return GetChannels(owner.UUID);
+        }
+        public Channel[] GetChannels(Guid owner)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+        { "@OwnerUUID", owner.ToByteArray() }
+    };
+
+            return getChannels("OwnerUUID = @OwnerUUID", parameters);
+        }
+
+        public Channel[] GetChannels()
+        {
+            return getChannels();
+        }
+        private Channel[] getChannels(string whereClause = null, Dictionary<string, object> parameters = null)
+        {
+
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM channels";
+
+                if (!string.IsNullOrWhiteSpace(whereClause))
+                {
+                    query += " WHERE " + whereClause;
+                }
+
+                using (SqlCommand cmd = new SqlCommand(query, sql))
+                {
+                    if (parameters != null)
+                    {
+                        foreach (var param in parameters)
+                        {
+                            cmd.Parameters.AddWithValue(param.Key, param.Value);
+                        }
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "Channels");
+
+                    DataTable userTable = dataSet.Tables[0];
+
+                    Channel[] channels = new Channel[userTable.Rows.Count];
+
+                    for (int i = 0; i < channels.Length; i++)
+                    {
+                        DataRow row = userTable.Rows[i];
+
+                        channels[i] = new Channel(
+                            new Guid((byte[])(row[userTable.Columns[0]])),
+                            new Guid((byte[])(row[userTable.Columns[1]])),
+                            (string)(row[userTable.Columns[2]])
+                        );
+                    }
+
+                    return channels;
+                }
+            }
+
+        }
+
+        public int MessageCount(Channel channel)
+        {
+            return MessageCount(channel.UUID);
+        }
+
+        public int MessageCount(Guid channel)
+        {
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT 1 FROM Messages WHERE ChannelUUID = @ChannelUUID";
+
+                using (SqlCommand cmd = new SqlCommand(query, sql))
+                {
+                    cmd.Parameters.AddWithValue("@ChannelUUID", channel);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "Messages");
+
+                    DataTable messageTable = dataSet.Tables[0];
+
+                    return messageTable.Rows.Count;
                 }
             }
         }
@@ -322,13 +460,29 @@ namespace WebApplication6
         public readonly Guid SenderUUID;
         public readonly string Content;
         public readonly DateTime CreatedAt;
+        public readonly Guid ChannelUUID;
 
-        public Message(Guid uuid, Guid senderUUID, string content, DateTime createdAt)
+        public Message(Guid uuid, Guid senderUUID, string content, DateTime createdAt, Guid channelUUID)
         {
             UUID = uuid;
             SenderUUID = senderUUID;
             Content = content;
             CreatedAt = createdAt;
+            ChannelUUID = channelUUID;
+        }
+    }
+
+    public class Channel
+    {
+        public readonly Guid UUID;
+        public readonly Guid OwnerUUID;
+        public readonly string Name;
+
+        public Channel(Guid uUID, Guid ownerUUID, string name)
+        {
+            UUID = uUID;
+            OwnerUUID = ownerUUID;
+            Name = name;
         }
     }
 }

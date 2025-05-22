@@ -33,7 +33,7 @@ namespace WebApplication6
             cmd.Parameters.AddWithValue("@Bio", user.Bio());
             cmd.Parameters.AddWithValue("@Score", user.Score());
             cmd.Parameters.AddWithValue("@AvatarURL", user.AvatarURL());
-            cmd.Parameters.AddWithValue("@Token", user.Token());
+            cmd.Parameters.AddWithValue("@Token", user.token);
 
             sql.Open();
             cmd.ExecuteNonQuery();
@@ -47,7 +47,7 @@ namespace WebApplication6
         { "@Email", email }
     };
 
-            User[] results = getUsers("Email = @Email", parameters);
+            User[] results = GetUsers("Email = @Email", parameters);
             return results.Length > 0 ? results[0] : null;
         }
 
@@ -58,7 +58,7 @@ namespace WebApplication6
         { "@Username", username }
     };
 
-            User[] results = getUsers("Username = @Username", parameters);
+            User[] results = GetUsers("Username = @Username", parameters);
             return results.Length > 0 ? results[0] : null;
         }
 
@@ -75,15 +75,15 @@ namespace WebApplication6
         { "@Token", tokenBytes }
     };
 
-            User[] results = getUsers("Token = @Token", parameters);
+            User[] results = GetUsers("Token = @Token", parameters);
             return results.Length > 0 ? results[0] : null;
         }
 
         public User[] GetUsers()
         {
-            return getUsers();
+            return GetUsers(null, null);
         }
-        private User[] getUsers(string whereClause = null, Dictionary<string, object> parameters = null)
+        private User[] GetUsers(string whereClause, Dictionary<string, object> parameters)
         {
 
             using (SqlConnection sql = new SqlConnection(_connectionString))
@@ -118,16 +118,16 @@ namespace WebApplication6
                         DataRow row = userTable.Rows[i];
  
                         users[i] = new User(
-                            new Guid((byte[])(row[userTable.Columns[0]])),
-                            (string)(row[userTable.Columns[1]]),
-                            (string)(row[userTable.Columns[2]]),
-                            (byte[])(row[userTable.Columns[3]]),
-                            (string)(row[userTable.Columns[4]]),
-                            (string)(row[userTable.Columns[5]]),
-                            (string)(row[userTable.Columns[6]]),
-                            (string)(row[userTable.Columns[8]]),
-                            (byte[])(row[userTable.Columns[9]]),
-                            (double)(row[userTable.Columns[7]])
+                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                            (string)(row[userTable.Columns[1]]), //email
+                            (string)(row[userTable.Columns[2]]), //username
+                            (byte[])(row[userTable.Columns[3]]), //passwordhash
+                            (string)(row[userTable.Columns[4]]), //firstname
+                            (string)(row[userTable.Columns[5]]), //lastname
+                            (string)(row[userTable.Columns[6]]), //bio
+                            (string)(row[userTable.Columns[8]]), //avatarurl
+                            (byte[])(row[userTable.Columns[9]]), //token
+                            (double)(row[userTable.Columns[7]]) //score
                         );
                     }
 
@@ -178,77 +178,67 @@ namespace WebApplication6
             }
         }
 
-        // inserts the message into the database (unsafe so private [there can be another channel with the same uuid])
-        private void InsertMessage(Message message)
+        public void InsertComment(Comment comment)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO Messages (UUID, SenderUUID, Content, CreatedAt, ChannelUUID)
-                         VALUES (@UUID, @SenderUUID, @Content, @CreatedAt, @ChannelUUID)";
+            string query = @"INSERT INTO Comments (UUID, SenderUUID, Content, CreatedAt, PostUUID)
+                         VALUES (@UUID, @SenderUUID, @Content, @CreatedAt, @PostUUID)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
-            cmd.Parameters.AddWithValue("@UUID", message.UUID.ToByteArray());
-            cmd.Parameters.AddWithValue("@SenderUUID", message.SenderUUID.ToByteArray());
-            cmd.Parameters.AddWithValue("@Content", message.Content);
-            cmd.Parameters.AddWithValue("@CreatedAt", message.CreatedAt);
-            cmd.Parameters.AddWithValue("@ChannelUUID", message.ChannelUUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@UUID", comment.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@SenderUUID", comment.SenderUUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Content", comment.Content);
+            cmd.Parameters.AddWithValue("@CreatedAt", comment.CreatedAt);
+            cmd.Parameters.AddWithValue("@PostUUID", comment.PostUUID.ToByteArray());
 
             sql.Open();
             cmd.ExecuteNonQuery();
             sql.Close();
         }
-        
-        // inserts the channel into the database (unsafe too)
-        private void InsertChannel(Channel channel)
+      
+        public void InsertPost(Post post)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO Channels (UUID, OwnerUUID, Name)
-                         VALUES (@UUID, @OwnerUUID, @Name)";
+            string query = @"INSERT INTO Posts (UUID, PosterUUID, Content, CreatedAt, Title, Pinned)
+                         VALUES (@UUID, @PosterUUID, @Content, @CreatedAt, @Title, @Pinned)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
-            cmd.Parameters.AddWithValue("@UUID", channel.UUID.ToByteArray());
-            cmd.Parameters.AddWithValue("@OwnerUUID", channel.OwnerUUID.ToByteArray());
-            cmd.Parameters.AddWithValue("@Name", channel.Name);
+            cmd.Parameters.AddWithValue("@UUID", post.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@PosterUUID", post.PosterUUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Content", post.Content);
+            cmd.Parameters.AddWithValue("@CreatedAt", post.CreatedAt);
+            cmd.Parameters.AddWithValue("@Title", post.Title);
+            cmd.Parameters.AddWithValue("@Pinned", post.Pinned);
 
             sql.Open();
             cmd.ExecuteNonQuery();
             sql.Close();
         }
 
-        // creates a new channel from the provided data and inserts it into the databse
-        public void CreateChannel(User owner, string name)
+        public Post[] GetPosts(User owner)
         {
-            InsertChannel(new Channel(Guid.NewGuid(), owner.UUID, name));
+            return GetPosts(owner.UUID);
         }
-
-        // creates a new message from the provided data and inserts it into the database
-        public void PostMessage(Channel channel, User sender, string content)
-        {
-            InsertMessage(new Message(Guid.NewGuid(), sender.UUID, content, DateTime.Now, channel.UUID));
-        }
-        public Channel[] GetChannels(User owner)
-        {
-            return GetChannels(owner.UUID);
-        }
-        public Channel[] GetChannels(Guid owner)
+        public Post[] GetPosts(Guid poster)
         {
             var parameters = new Dictionary<string, object>
             {
-        { "@OwnerUUID", owner.ToByteArray() }
+        { "@PosterUUID", poster.ToByteArray() }
     };
 
-            return getChannels("OwnerUUID = @OwnerUUID", parameters);
+            return GetPosts("PosterUUID = @PosterUUID", parameters);
         }
 
-        public Channel[] GetChannels()
+        public Post[] GetPosts()
         {
-            return getChannels();
+            return GetPosts(null, null);
         }
-        private Channel[] getChannels(string whereClause = null, Dictionary<string, object> parameters = null)
+        private Post[] GetPosts(string whereClause, Dictionary<string, object> parameters)
         {
 
             using (SqlConnection sql = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM channels";
+                string query = "SELECT * FROM posts";
 
                 if (!string.IsNullOrWhiteSpace(whereClause))
                 {
@@ -267,47 +257,129 @@ namespace WebApplication6
 
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Channels");
+                    adapter.Fill(dataSet, "Posts");
 
                     DataTable userTable = dataSet.Tables[0];
 
-                    Channel[] channels = new Channel[userTable.Rows.Count];
+                    Post[] posts = new Post[userTable.Rows.Count];
 
-                    for (int i = 0; i < channels.Length; i++)
+                    for (int i = 0; i < posts.Length; i++)
                     {
                         DataRow row = userTable.Rows[i];
 
-                        channels[i] = new Channel(
-                            new Guid((byte[])(row[userTable.Columns[0]])),
-                            new Guid((byte[])(row[userTable.Columns[1]])),
-                            (string)(row[userTable.Columns[2]])
+                        posts[i] = new Post(
+                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                            new Guid((byte[])(row[userTable.Columns[1]])), //posteruuid
+                            (string)(row[userTable.Columns[2]]), //content
+                            (DateTime)(row[userTable.Columns[3]]), //createdat
+                            (string)(row[userTable.Columns[4]]), //title
+                            (bool)(row[userTable.Columns[5]]) //pinned
                         );
                     }
 
-                    return channels;
+                    return posts;
                 }
             }
 
         }
 
-        public int MessageCount(Channel channel)
+        public Tablature[] GetTablatures(User poster)
         {
-            return MessageCount(channel.UUID);
+            return GetTablatures(poster.UUID);
         }
 
-        public int MessageCount(Guid channel)
+        public Tablature[] GetTablatures(Guid poster)
         {
+            var parameters = new Dictionary<string, object>
+            {
+        { "@PosterUUID", poster.ToByteArray() }
+    };
+
+            return GetTablatures("PosterUUID = @PosterUUID", parameters);
+        }
+
+        public Tablature[] GetTablatures()
+        {
+            return GetTablatures(null, null);
+        }
+        private Tablature[] GetTablatures(string whereClause, Dictionary<string, object> parameters)
+        {
+
             using (SqlConnection sql = new SqlConnection(_connectionString))
             {
-                string query = "SELECT 1 FROM Messages WHERE ChannelUUID = @ChannelUUID";
+                string query = "SELECT * FROM tablatures";
+
+                if (!string.IsNullOrWhiteSpace(whereClause))
+                {
+                    query += " WHERE " + whereClause;
+                }
 
                 using (SqlCommand cmd = new SqlCommand(query, sql))
                 {
-                    cmd.Parameters.AddWithValue("@ChannelUUID", channel);
+                    if (parameters != null)
+                    {
+                        foreach (var param in parameters)
+                        {
+                            cmd.Parameters.AddWithValue(param.Key, param.Value);
+                        }
+                    }
 
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Messages");
+                    adapter.Fill(dataSet, "Tablatures");
+
+                    DataTable userTable = dataSet.Tables[0];
+
+                    Tablature[] tablatures = new Tablature[userTable.Rows.Count];
+
+                    for (int i = 0; i < tablatures.Length; i++)
+                    {
+                        DataRow row = userTable.Rows[i];
+
+                        tablatures[i] = new Tablature(
+                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                            new Guid((byte[])(row[userTable.Columns[1]])), //posteruuid
+                            (string)(row[userTable.Columns[2]]), //songname
+                            (string)(row[userTable.Columns[3]]), //artistname
+                            (string)(row[userTable.Columns[4]]), //albumname
+                            (int)(row[userTable.Columns[11]]), // releaseyear
+                            (string)(row[userTable.Columns[5]]), //content
+                            (string)(row[userTable.Columns[6]]), //tuningtype
+                            (string)(row[userTable.Columns[7]]), //difficulty
+                            (DateTime)(row[userTable.Columns[8]]), //createdat
+                            (int)(row[userTable.Columns[9]]), //score
+                            (int)(row[userTable.Columns[10]]) //scorecount
+                        );
+                    }
+
+                    return tablatures;
+                }
+            }
+
+        }
+
+        public int CommentCount(Post post)
+        {
+            return CommentCount(post.UUID);
+        }
+        public int CommentCount(Tablature tablature)
+        {
+            return CommentCount(tablature.UUID);
+        }
+
+        public int CommentCount(Guid post)
+        {
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT 1 FROM Comments WHERE PostUUID = @PostUUID";
+
+                using (SqlCommand cmd = new SqlCommand(query, sql))
+                {
+                    cmd.Parameters.AddWithValue("@PostUUID", post);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "Comments");
 
                     DataTable messageTable = dataSet.Tables[0];
 
@@ -330,7 +402,7 @@ namespace WebApplication6
         private string avatarURL;
         private double score;
 
-        private readonly byte[] token;
+        public readonly byte[] token;
 
         public User(
             string email, 
@@ -438,51 +510,228 @@ namespace WebApplication6
             return sb.ToString();
         }
 
-        // Update the user's score
-        public void UpdateScore(Message message)
+        public void UpdateScore(Comment comment)
         {
-            if (message == null || !message.SenderUUID.Equals(UUID))
+            if (comment == null || !comment.SenderUUID.Equals(UUID))
             {
-                // message not from user
                 return;
             }
 
-            double i = (double)message.Content.Length / 20;
+            double i = (double)comment.Content.Length / 20;
             i *= ((double)(new Random()).Next(0, 101)) / 100;
 
             score += (score * i) + i;
         }
     }
 
-    public class Message
+    public class Comment
     {
         public readonly Guid UUID;
         public readonly Guid SenderUUID;
         public readonly string Content;
         public readonly DateTime CreatedAt;
-        public readonly Guid ChannelUUID;
+        public readonly Guid PostUUID;
 
-        public Message(Guid uuid, Guid senderUUID, string content, DateTime createdAt, Guid channelUUID)
+        public Comment(
+            Guid uuid, 
+            Guid senderUUID, 
+            string content, 
+            DateTime createdAt, 
+            Guid postUUID
+        )
         {
             UUID = uuid;
             SenderUUID = senderUUID;
             Content = content;
             CreatedAt = createdAt;
-            ChannelUUID = channelUUID;
+            PostUUID = postUUID;
+        }
+
+        public Comment(
+            Guid senderUUID,
+            string content,
+            Guid postUUID
+        )
+        {
+            UUID = Guid.NewGuid();
+            SenderUUID = senderUUID;
+            Content = content;
+            CreatedAt = DateTime.Now;
+            PostUUID = postUUID;
+        }
+
+        public Comment(
+            User sender,
+            string content,
+            Post post
+        )
+        {
+            UUID = Guid.NewGuid();
+            SenderUUID = sender.UUID;
+            Content = content;
+            CreatedAt = DateTime.Now;
+            PostUUID = post.UUID;
+        }
+        public Comment(
+            User sender,
+            string content,
+            Tablature tablature
+        )
+        {
+            UUID = Guid.NewGuid();
+            SenderUUID = sender.UUID;
+            Content = content;
+            CreatedAt = DateTime.Now;
+            PostUUID = tablature.UUID;
         }
     }
 
-    public class Channel
+    public class Post
     {
         public readonly Guid UUID;
-        public readonly Guid OwnerUUID;
-        public readonly string Name;
+        public readonly Guid PosterUUID;
+        public readonly string Content;
+        public readonly DateTime CreatedAt;
+        public readonly string Title;
+        public readonly bool Pinned;
 
-        public Channel(Guid uUID, Guid ownerUUID, string name)
+        public Post(
+            Guid uuid, 
+            Guid posterUUID, 
+            string content, 
+            DateTime createdAt, 
+            string title, 
+            bool pinned
+        )
         {
-            UUID = uUID;
-            OwnerUUID = ownerUUID;
-            Name = name;
+            UUID = uuid;
+            PosterUUID = posterUUID;
+            Content = content;
+            CreatedAt = createdAt;
+            Title = title;
+            Pinned = pinned;
+        }
+
+        public Post(
+            Guid posterUUID,
+            string content,
+            string title
+        )
+        {
+            UUID = Guid.NewGuid();
+            PosterUUID = posterUUID;
+            Content = content;
+            CreatedAt = DateTime.Now;
+            Title = title;
+            Pinned = false;
+        }
+
+        public Post(
+            User poster,
+            string content,
+            string title
+        )
+        {
+            UUID = Guid.NewGuid();
+            PosterUUID = poster.UUID;
+            Content = content;
+            CreatedAt = DateTime.Now;
+            Title = title;
+            Pinned = false;
+        }
+    }
+    public class Tablature
+    {
+        public readonly Guid UUID;
+        public readonly Guid PosterUUID;
+        public readonly string SongName;
+        public readonly string ArtistName;
+        public readonly string AlbumName;
+        public readonly int ReleaseYear;
+        public readonly string Content;
+        public readonly string TuningType;
+        public readonly string Difficulty;
+        public readonly DateTime CreatedAt;
+        public readonly int Score;
+        public readonly int ScoreCount;
+
+        public Tablature(
+            Guid uuid,
+            Guid posterUUID,
+            string songName,
+            string artistName,
+            string albumName,
+            int releaseYear,
+            string content,
+            string tuningType,
+            string difficulty,
+            DateTime createdAt,
+            int score,
+            int scoreCount
+        )
+        {
+            UUID = uuid;
+            PosterUUID = posterUUID;
+            SongName = songName;
+            ArtistName = artistName;
+            AlbumName = albumName;
+            ReleaseYear = releaseYear;
+            Content = content;
+            TuningType = tuningType;
+            Difficulty = difficulty;
+            CreatedAt = createdAt;
+            Score = score;
+            ScoreCount = scoreCount;
+        }
+
+        public Tablature(
+            Guid posterUUID,
+            string songName,
+            string artistName,
+            string albumName,
+            int releaseYear,
+            string content,
+            string tuningType,
+            string difficulty
+        )
+        {
+            UUID = Guid.NewGuid();
+            PosterUUID = posterUUID;
+            SongName = songName;
+            ArtistName = artistName;
+            AlbumName = albumName;
+            ReleaseYear = releaseYear;
+            Content = content;
+            TuningType = tuningType;
+            Difficulty = difficulty;
+            CreatedAt = DateTime.Now;
+            Score = 0;
+            ScoreCount = 0;
+        }
+
+        public Tablature(
+            User poster,
+            string songName,
+            string artistName,
+            string albumName,
+            int releaseYear,
+            string content,
+            string tuningType,
+            string difficulty
+        )
+        {
+            UUID = Guid.NewGuid();
+            PosterUUID = poster.UUID;
+            SongName = songName;
+            ArtistName = artistName;
+            AlbumName = albumName;
+            ReleaseYear = releaseYear;
+            Content = content;
+            TuningType = tuningType;
+            Difficulty = difficulty;
+            CreatedAt = DateTime.Now;
+            Score = 0;
+            ScoreCount = 0;
         }
     }
 }

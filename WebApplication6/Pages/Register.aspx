@@ -1,9 +1,9 @@
 ﻿<%@ Page Title="Register" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="WebApplication6.Register" %>
 
 <asp:Content id="HeadContent" ContentPlaceHolderID="head" runat="server">
-    <link href="../Styles/login.css" rel="stylesheet" />
-    <link href="../Styles/register.css" rel="stylesheet" />
-    <script src="../Scripts/register.js"></script>
+    <link href="/Styles/login.css" rel="stylesheet" />
+    <link href="/Styles/register.css" rel="stylesheet" />
+    <script src="/Scripts/register.js"></script>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">

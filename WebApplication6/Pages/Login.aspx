@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="WebApplication6.Login" %>
 
 <asp:Content id="HeadContent" ContentPlaceHolderID="head" runat="server">
-    <link href="../Styles/login.css" rel="stylesheet" />
-    <script src="../Scripts/login.js"></script>
+    <link href="/Styles/login.css" rel="stylesheet" />
+    <script src="/Scripts/login.js"></script>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">

@@ -1,37 +1,13 @@
-﻿.title {
+﻿#title, #subtitle, .subtitle {
     font-family: Roboto, sans-serif;
     color: white;
-}
-
-.subtext {
-    font-family: Roboto, sans-serif;
-    color: white;
-}
-
-.subtext .bio {
-    font-size: 20px;
-    display: block;
-    margin-bottom: 20px;
-}
-
-subtext .info {
-    display: block;
-    margin-top: 20px;
-}
-
-.userbox {
-    margin: 0 auto;
-    width: 30%;
-    background-color: #393939;
-    padding: 30px;
-    border-radius: 10px;
-}
-
-.boxtitle {
-    border-radius: 10px;
-    font-family: Roboto, sans-serif;
     text-align: center;
-    color: white;
+}
+
+.subtitle {
+    margin-top: 100px;
+    padding-left: 10px;
+    font-size: 20px;
 }
 
 .box {

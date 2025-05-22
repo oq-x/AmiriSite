@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - AmiriSite</title>
+    <title><%: Page.Title %> - AmiriGuitarSite</title>
     <script src="https://kit.fontawesome.com/0c8cb0c4e9.js" crossorigin="anonymous"></script>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <link href="~/Styles/master.css" rel="stylesheet" />
@@ -19,17 +19,28 @@
 </head>
 <body>
    <form id="form1" runat="server">
-        <nav class ="nav">
-            <a class="nav-title" href="/">AmiriSite</a>
+        <nav class="nav">
+            <a class="nav-title" href="/">AmiriGuitarSite</a>
             <ul>
-                <li class="nav-crumb"><a class="nav-crumb-text" href="About">About</a></li>
-                <li class="nav-crumb"><a class="nav-crumb-text" href="Contact">Contact</a></li>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="ChordTrainer">Chord Trainer</a></li>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="Tablatures">Community Tablatures</a></li>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="Forum">Forum</a></li>
             </ul>
 
-            <%
+            <% 
                 WebApplication6.User currentUser = CurrentUser();
-            %>
-            <a class="nav-username" href="<%: (currentUser == null) ? "Login" : "User?n="+currentUser.Username %>"><%:currentUser!=null ? currentUser.Username:"Login" %></a>
+                if (currentUser == null)
+                { %>
+
+                <a class="nav-username" href="Login">Login</a>
+
+            <% }
+                else
+                { %>
+
+                <a class="nav-username" href="<%:"User?n=" + currentUser.Username %>"><%:currentUser.Username %></a>
+            
+            <% } %>
         </nav>
         <hr />
         <div class="container body-content">

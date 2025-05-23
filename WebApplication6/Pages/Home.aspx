@@ -5,12 +5,7 @@
 </asp:Content>
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <main>
-        <%
-            WebApplication6.User user = ((WebApplication6.SiteMaster)Master).CurrentUser();
-        %>
-
-
-            <h1 id="title">Welcome  to AmiriGuitarSite!</h1>
+            <h1 id="title">Welcome to AmiriGuitarSite!</h1>
             <h2 id="subtitle">Your favorite website</h2>
 
             <p class="subtitle">

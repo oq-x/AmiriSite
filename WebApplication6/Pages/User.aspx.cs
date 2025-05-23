@@ -5,14 +5,17 @@ namespace WebApplication6
 {
     public partial class UserPage : Page
     {
+        protected User user;
+        protected Tablature[] tablatures;
+        protected SiteMaster master => (SiteMaster)Master;
         protected void Page_Load(object sender, EventArgs e)
         {
-            SiteMaster master = (SiteMaster)Master;
             string name = Request.QueryString["n"];
-            User me = master.CurrentUser();
+            user = master.DataManager.GetUserByUsername(name);
 
-            if (name == null || !master.DataManager.UserExistByUsername(name))
+            if (name == null || user == null)
             {
+                User me = master.CurrentUser();
                 if (me != null)
                 {
                     Response.Redirect("User?n=" + me.Username);
@@ -23,6 +26,10 @@ namespace WebApplication6
                     Response.Redirect("/");
                     return;
                 }
+            } else
+            {
+                tablatures = master.DataManager.GetTablatures(user);
+                Page.Title = user.Username;
             }
         }
     }

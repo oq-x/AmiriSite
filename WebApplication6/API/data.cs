@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+using System.Reflection;
 
 namespace WebApplication6
 {
@@ -20,7 +21,7 @@ namespace WebApplication6
         public void CreateUser(User user)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token)
+            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt)
                          VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
@@ -34,10 +35,21 @@ namespace WebApplication6
             cmd.Parameters.AddWithValue("@Score", user.Score());
             cmd.Parameters.AddWithValue("@AvatarURL", user.AvatarURL());
             cmd.Parameters.AddWithValue("@Token", user.token);
+            cmd.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
 
             sql.Open();
             cmd.ExecuteNonQuery();
             sql.Close();
+        }
+        public User GetUser(Guid uuid)
+        {
+            var parameters = new Dictionary<string, object>
+    {
+        { "@UUID", uuid.ToByteArray() }
+    };
+
+            User[] results = GetUsers("UUID = @UUID", parameters);
+            return results.Length > 0 ? results[0] : null;
         }
 
         public User GetUser(string email)
@@ -127,6 +139,7 @@ namespace WebApplication6
                             (string)(row[userTable.Columns[6]]), //bio
                             (string)(row[userTable.Columns[8]]), //avatarurl
                             (byte[])(row[userTable.Columns[9]]), //token
+                            (DateTime)(row[userTable.Columns[10]]), //createdat
                             (double)(row[userTable.Columns[7]]) //score
                         );
                     }
@@ -215,6 +228,16 @@ namespace WebApplication6
             sql.Close();
         }
 
+        public Post GetPost(Guid uuid)
+        {
+            var parameters = new Dictionary<string, object>
+    {
+        { "@UUID", uuid.ToByteArray() }
+    };
+
+            Post[] results = GetPosts("UUID = @UUID", parameters);
+            return results.Length > 0 ? results[0] : null;
+        }
         public Post[] GetPosts(User owner)
         {
             return GetPosts(owner.UUID);
@@ -283,6 +306,28 @@ namespace WebApplication6
 
         }
 
+        public Tablature GetTablature(string uuid)
+        {
+            var parameters = new Dictionary<string, object>
+    {
+        { "@UUID", Guid.Parse(uuid).ToByteArray() }
+    };
+
+            Tablature[] results = GetTablatures("UUID = @UUID", parameters);
+            return results.Length > 0 ? results[0] : null;
+        }
+
+        public Tablature GetTablature(Guid uuid)
+        {
+            var parameters = new Dictionary<string, object>
+    {
+        { "@UUID", uuid.ToByteArray() }
+    };
+
+            Tablature[] results = GetTablatures("UUID = @UUID", parameters);
+            return results.Length > 0 ? results[0] : null;
+        }
+
         public Tablature[] GetTablatures(User poster)
         {
             return GetTablatures(poster.UUID);
@@ -347,12 +392,82 @@ namespace WebApplication6
                             (string)(row[userTable.Columns[6]]), //tuningtype
                             (string)(row[userTable.Columns[7]]), //difficulty
                             (DateTime)(row[userTable.Columns[8]]), //createdat
-                            (int)(row[userTable.Columns[9]]), //score
-                            (int)(row[userTable.Columns[10]]) //scorecount
+                            (double)(row[userTable.Columns[9]]), //score
+                            (int)(row[userTable.Columns[10]]), //scorecount
+                            (int)(row[userTable.Columns[12]]) //capo
                         );
                     }
 
                     return tablatures;
+                }
+            }
+
+        }
+
+        public Comment[] GetComments(Post post)
+        {
+            return GetComments(post.UUID);
+        }
+
+        public Comment[] GetComments(Tablature tab)
+        {
+            return GetComments(tab.UUID);
+        }
+
+        public Comment[] GetComments(Guid postUUID)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+        { "@PostUUID", postUUID.ToByteArray() }
+    };
+
+            return GetComments("PostUUID = @PostUUID", parameters);
+        }
+
+        private Comment[] GetComments(string whereClause, Dictionary<string, object> parameters)
+        {
+
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM comments";
+
+                if (!string.IsNullOrWhiteSpace(whereClause))
+                {
+                    query += " WHERE " + whereClause;
+                }
+
+                using (SqlCommand cmd = new SqlCommand(query, sql))
+                {
+                    if (parameters != null)
+                    {
+                        foreach (var param in parameters)
+                        {
+                            cmd.Parameters.AddWithValue(param.Key, param.Value);
+                        }
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "Comments");
+
+                    DataTable userTable = dataSet.Tables[0];
+
+                    Comment[] comments = new Comment[userTable.Rows.Count];
+
+                    for (int i = 0; i < comments.Length; i++)
+                    {
+                        DataRow row = userTable.Rows[i];
+
+                        comments[i] = new Comment(
+                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                            new Guid((byte[])(row[userTable.Columns[1]])), //senderuuid
+                            (string)(row[userTable.Columns[2]]), //content
+                            (DateTime)(row[userTable.Columns[3]]), //createdat
+                            new Guid((byte[])(row[userTable.Columns[4]])) //postuuid
+                        );
+                    }
+
+                    return comments;
                 }
             }
 
@@ -402,6 +517,8 @@ namespace WebApplication6
         private string avatarURL;
         private double score;
 
+        public readonly DateTime CreatedAt;
+
         public readonly byte[] token;
 
         public User(
@@ -422,6 +539,8 @@ namespace WebApplication6
 
             avatarURL = "";
             score = 0;
+
+            CreatedAt = DateTime.Now;
 
             byte[] token = SHA256.Create().ComputeHash(UUID.ToByteArray());
 
@@ -446,6 +565,7 @@ namespace WebApplication6
             string bio,
             string avatarURL,
             byte[] token,
+            DateTime createdAt,
             double score = 0
         )
         {
@@ -460,6 +580,7 @@ namespace WebApplication6
             this.avatarURL = avatarURL;
             this.token = token;
             this.score = score;
+            CreatedAt = createdAt;
         }
 
         // this sets the password hash to the hash of the new password
@@ -652,8 +773,9 @@ namespace WebApplication6
         public readonly string TuningType;
         public readonly string Difficulty;
         public readonly DateTime CreatedAt;
-        public readonly int Score;
+        public readonly double Score;
         public readonly int ScoreCount;
+        public readonly int Capo;
 
         public Tablature(
             Guid uuid,
@@ -666,8 +788,9 @@ namespace WebApplication6
             string tuningType,
             string difficulty,
             DateTime createdAt,
-            int score,
-            int scoreCount
+            double score,
+            int scoreCount,
+            int capo
         )
         {
             UUID = uuid;
@@ -682,6 +805,7 @@ namespace WebApplication6
             CreatedAt = createdAt;
             Score = score;
             ScoreCount = scoreCount;
+            Capo = capo;
         }
 
         public Tablature(
@@ -692,7 +816,8 @@ namespace WebApplication6
             int releaseYear,
             string content,
             string tuningType,
-            string difficulty
+            string difficulty,
+            int capo
         )
         {
             UUID = Guid.NewGuid();
@@ -707,6 +832,7 @@ namespace WebApplication6
             CreatedAt = DateTime.Now;
             Score = 0;
             ScoreCount = 0;
+            Capo = capo;
         }
 
         public Tablature(
@@ -717,7 +843,8 @@ namespace WebApplication6
             int releaseYear,
             string content,
             string tuningType,
-            string difficulty
+            string difficulty,
+            int capo
         )
         {
             UUID = Guid.NewGuid();
@@ -732,6 +859,7 @@ namespace WebApplication6
             CreatedAt = DateTime.Now;
             Score = 0;
             ScoreCount = 0;
+            Capo = capo;
         }
     }
 }

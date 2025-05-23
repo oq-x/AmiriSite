@@ -5,6 +5,7 @@ namespace WebApplication6
 {
     public partial class Register : Page
     {
+        protected SiteMaster master => (SiteMaster)Master;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Request.Form["submit"] != null)
@@ -40,15 +41,14 @@ namespace WebApplication6
                     return;
                 }
 
-                SiteMaster m = (SiteMaster)Master;
-                bool existM = m.DataManager.UserExistByEmail(email);
+                bool existM = master.DataManager.UserExistByEmail(email);
                 if (existM)
                 {
                     Session["error"] = "This email is already taken!";
                     return;
                 }
 
-                bool existU = m.DataManager.UserExistByUsername(username);
+                bool existU = master.DataManager.UserExistByUsername(username);
                 if (existU)
                 {
                     Session["error"] = "This username is already taken!";
@@ -57,7 +57,7 @@ namespace WebApplication6
 
                 User user = new User(email, username, password, firstName, lastName);
 
-                m.DataManager.CreateUser(user);
+                master.DataManager.CreateUser(user);
 
                 Session["token"] = user.Token();
                 Session["login"] = true;

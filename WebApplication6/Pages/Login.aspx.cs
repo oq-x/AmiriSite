@@ -5,12 +5,12 @@ namespace WebApplication6
 {
     public partial class Login : Page
     {
+        protected SiteMaster master => (SiteMaster)Master;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Request.Form["submit"] != null)
             {
-                SiteMaster m = (SiteMaster)Master;
-                User user = m.DataManager.GetUser(Request.Form["email"]);
+                User user = master.DataManager.GetUser(Request.Form["email"]);
                 if (user == null)
                 {
                     Session["error"] = "Unknown user!";

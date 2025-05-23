@@ -1,10 +1,14 @@
-﻿/**
+﻿const query = window.location.search;
+
+
+const registerLink = document.getElementById("registerLink");
+registerLink.href = "Register" + query;
+/**
  * Login function
  * @param {MouseEvent} e
  */
 function login(e) {
-    const emailInput = document.getElementById("email")
-    if (emailInput.value == "" || !emailInput.checkValidity()) {
+    const emailInput = document.getElementById("email") if (emailInput.value == "" || !emailInput.checkValidity()) {
         setError("Invalid email!")
         e.preventDefault()
         return

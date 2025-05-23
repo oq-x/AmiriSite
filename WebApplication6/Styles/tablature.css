@@ -91,3 +91,53 @@ body::-webkit-scrollbar {
 main {
     display: flex;
 }
+
+.logintext {
+    display: block;
+    text-align: center;
+    padding: 10px;
+}
+
+.commenttext {
+    display: block;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+#loginhref {
+    text-decoration: none;
+    color: #0093ff;
+}
+
+.input {
+    padding: 5px;
+    width: 80%;
+    height: 80px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.submit {
+    display: block;
+    margin: 10px auto 0 auto;
+    width: 80%;
+    padding: 5px;
+    font-size: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background-color: #0093ff;
+    transition: 0.2s;
+    box-sizing: border-box;
+}
+
+.submit:hover {
+    color: #0093ff;
+    background-color: white;
+}

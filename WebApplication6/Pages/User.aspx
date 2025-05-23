@@ -6,7 +6,6 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <main aria-labelledby="title" runat="server">
-
         <div class="userbox">
             <h1 class="title"><%: user.Username %></h1>
             <p class="subtext">

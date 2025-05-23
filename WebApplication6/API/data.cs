@@ -308,13 +308,19 @@ namespace WebApplication6
 
         public Tablature GetTablature(string uuid)
         {
-            var parameters = new Dictionary<string, object>
+            try
+            {
+                var parameters = new Dictionary<string, object>
     {
         { "@UUID", Guid.Parse(uuid).ToByteArray() }
     };
 
-            Tablature[] results = GetTablatures("UUID = @UUID", parameters);
-            return results.Length > 0 ? results[0] : null;
+                Tablature[] results = GetTablatures("UUID = @UUID", parameters);
+                return results.Length > 0 ? results[0] : null;
+            } catch
+            {
+                return null;
+            }
         }
 
         public Tablature GetTablature(Guid uuid)

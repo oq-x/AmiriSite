@@ -5,7 +5,7 @@
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <main aria-labelledby="title">
+    <main aria-labelledby="title" runat="server">
         <div class="main">
             <h1 id="title"><%:tab.ArtistName %> - <%: tab.SongName %></h1>
             <h2 id="subtitle">Created by <%:creator.Username %> on <%:tab.CreatedAt.ToString("dd/MM/yyyy") %></h2>
@@ -16,7 +16,7 @@
             <div class="stars">
                 <div class="stars-outer">
                     &#9733;&#9733;&#9733;&#9733;&#9733;
-                    <div class="stars-inner" style="width:<%: (tab.Score / 5.0) * 100 %>%;">
+                    <div class="stars-inner" style='width:<%: tab.Score / 5.0 * 100 %>%;'>
                         &#9733;&#9733;&#9733;&#9733;&#9733;
                     </div>
                 </div>
@@ -24,12 +24,26 @@
             <div id="content"><%= tab.Content.Replace(Environment.NewLine, "<br />") %></div>
         </div>
         <div class="comments">
-            <% foreach(var comment in comments.Reverse()) { %>
+            <% foreach (var comment in comments.OrderBy(c => c.CreatedAt)) { %>
             <% var user = master.DataManager.GetUser(comment.SenderUUID); %>
                 <div class="comment">
-                    <div class="top"><a class="author"><%: user.Username %></a> <a class="date"><%: tab.CreatedAt %></a></div>
+                    <div class="top"><a class="author"><%: user.Username %></a> <a class="date"><%: comment.CreatedAt %></a></div>
                     <br />
                     <a class="message"><%= comment.Content.Replace(Environment.NewLine, "<br/>") %></a>
+                </div>
+            <% } %>
+            <% if (user == null)
+                { %>
+
+                <span class="logintext"><a id="loginhref" href="Login?t=<%:tab.UUID %>">Login</a> to leave a comment</span>
+
+            <%}
+                else
+                {%>
+                <div class="comment">
+                    <a class="commenttext">Leave a comment: </a>
+                    <asp:TextBox ID="commentInput" placeholder="This is pretty cool" runat="server" TextMode="MultiLine" CssClass="input"/>
+                    <asp:Button ID="commentSubmit" runat="server" Text="Submit" CssClass="submit" OnClick="CommentSubmit"/>
                 </div>
             <% } %>
         </div>

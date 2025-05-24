@@ -49,3 +49,23 @@
     gap: 50px;
     justify-content: center;
 }
+
+.logout {
+    background-color: #f51c15;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    padding: 8px 30px;
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.logout:hover {
+    color: #f51c15;
+    background-color: white;
+}

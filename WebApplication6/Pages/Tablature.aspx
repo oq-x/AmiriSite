@@ -27,7 +27,7 @@
             <% foreach (var comment in comments.OrderBy(c => c.CreatedAt)) { %>
             <% var user = master.DataManager.GetUser(comment.SenderUUID); %>
                 <div class="comment">
-                    <div class="top"><a class="author"><%: user.Username %></a> <a class="date"><%: comment.CreatedAt %></a></div>
+                    <div class="top"><a class="author" href="User?n=<%:user.Username %>"><%: user.Username %></a> <a class="date"><%: comment.CreatedAt %></a></div>
                     <br />
                     <a class="message"><%= comment.Content.Replace(Environment.NewLine, "<br/>") %></a>
                 </div>
@@ -39,7 +39,8 @@
 
             <%}
                 else
-                {%>
+                {
+%>
                 <div class="comment">
                     <a class="commenttext">Leave a comment: </a>
                     <asp:TextBox ID="commentInput" placeholder="This is pretty cool" runat="server" TextMode="MultiLine" CssClass="input"/>

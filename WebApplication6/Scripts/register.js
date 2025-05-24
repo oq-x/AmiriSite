@@ -13,8 +13,8 @@ function register(e) {
     }
 
     const usernameInput = document.getElementById("username")
-    if (usernameInput.value.length < 3 || usernameInput.value.length > 15) {
-        setError("Username must be 3 to 15 characters long!")
+    if (usernameInput.value.length < 3 || usernameInput.value.length > 50) {
+        setError("Username must be 3 to 50 characters long!")
         e.preventDefault()
         return
     } else {
@@ -22,8 +22,8 @@ function register(e) {
     }
 
     const firstNameInput = document.getElementById("fname")
-    if (firstNameInput.value.length < 3 || firstNameInput.value.length > 15) {
-        setError("First name must be 3 to 15 characters long!")
+    if (firstNameInput.value.length < 3 || firstNameInput.value.length > 30) {
+        setError("First name must be 3 to 30 characters long!")
         e.preventDefault()
         return
     } else {
@@ -31,8 +31,8 @@ function register(e) {
     }
 
     const lastNameInput = document.getElementById("lname")
-    if (lastNameInput.value.length < 3 || lastNameInput.value.length > 15) {
-        setError("Last name must be 3 to 15 characters long!")
+    if (lastNameInput.value.length < 3 || lastNameInput.value.length > 30) {
+        setError("Last name must be 3 to 30 characters long!")
         e.preventDefault()
         return
     } else {

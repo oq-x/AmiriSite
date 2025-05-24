@@ -22,7 +22,7 @@ namespace WebApplication6
         {
             SqlConnection sql = new SqlConnection(_connectionString);
             string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt)
-                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token)";
+                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
             cmd.Parameters.AddWithValue("@UUID", user.UUID.ToByteArray());
@@ -332,6 +332,16 @@ namespace WebApplication6
 
             Tablature[] results = GetTablatures("UUID = @UUID", parameters);
             return results.Length > 0 ? results[0] : null;
+        }
+
+        public Tablature[] GetTablatures(string query)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+        { "@QUERY", $"%{query}%" }
+    };
+
+            return GetTablatures("SongName LIKE @QUERY OR ArtistName LIKE @QUERY OR AlbumName LIKE @QUERY OR Content LIKE @QUERY", parameters);
         }
 
         public Tablature[] GetTablatures(User poster)

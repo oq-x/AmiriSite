@@ -11,9 +11,17 @@ namespace WebApplication6
         protected void Page_Load(object sender, EventArgs e)
         {
             string name = Request.QueryString["n"];
-            user = master.DataManager.GetUserByUsername(name);
-
-            if (name == null || user == null)
+            if (name != null) {
+                user = master.DataManager.GetUserByUsername(name);
+            } else
+            {
+                try
+                {
+                    string uuid = Request.QueryString["u"] ?? "";
+                    user = master.DataManager.GetUser(Guid.Parse(uuid));
+                } catch { }
+            }
+            if (user == null)
             {
                 User me = master.CurrentUser();
                 if (me != null)
@@ -26,7 +34,8 @@ namespace WebApplication6
                     Response.Redirect("/");
                     return;
                 }
-            } else
+            }
+            else
             {
                 tablatures = master.DataManager.GetTablatures(user);
                 Page.Title = user.Username;

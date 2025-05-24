@@ -86,6 +86,12 @@ body::-webkit-scrollbar {
     font-weight: bold;
     font-size: 15px;
     display: block;
+    text-decoration: none;
+    color: white;
+}
+
+.author:hover {
+    color: #0093ff;
 }
 
 main {

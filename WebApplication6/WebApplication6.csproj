@@ -137,6 +137,7 @@
     </Content>
     <Content Include="Pages\Tablature.aspx" />
     <Content Include="Pages\Register.aspx" />
+    <Content Include="Pages\Tablatures.aspx" />
     <Content Include="Pages\User.aspx" />
     <Content Include="Scripts\login.js" />
     <Content Include="Scripts\register.js" />
@@ -149,6 +150,7 @@
     <Content Include="Site.Master" />
     <Content Include="Styles\register.css" />
     <Content Include="Styles\tablature.css" />
+    <Content Include="Styles\tablatures.css" />
     <Content Include="Styles\user.css" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
@@ -183,6 +185,13 @@
     </Compile>
     <Compile Include="Pages\Register.aspx.designer.cs">
       <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Tablatures.aspx.cs">
+      <DependentUpon>Tablatures.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Tablatures.aspx.designer.cs">
+      <DependentUpon>Tablatures.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\User.aspx.cs">
       <DependentUpon>User.aspx</DependentUpon>

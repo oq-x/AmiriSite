@@ -24,7 +24,7 @@
                     <div class="box">
                         <h1 class="title"><%: tab.ArtistName %> - <%:tab.SongName %></h1>
 
-                        <p class="description"><%: $"Released in {tab.ReleaseYear} on {tab.AlbumName},"%><br /><%: $"This song is in {tab.TuningType} tuning and it is rated {tab.Difficulty.ToLower()} difficulty" %></p>
+                        <p class="description"><%= $"Released in {tab.ReleaseYear} on {tab.AlbumName},<br/> This song is in {tab.TuningType} tuning and it is rated {tab.Difficulty.ToLower()} difficulty" %></p>
 
                         <a class="button" href="Tablature?t=<%: tab.UUID %>">Check it out</a>
                         <p class="inf"><a class="infttl">Created on </a><%:tab.CreatedAt.ToString("dd/MM/yyyy") %></p>

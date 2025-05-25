@@ -6,8 +6,13 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <main aria-labelledby="title" runat="server">
-        <h1>Community Tablatures</h1>
-        <div class="query">
+        <div class="top">
+            <h1>Community Tablatures</h1>
+            <% if (master.CurrentUser() != null) { %>
+                <a class="newtab" href="NewTablature">New</a>
+            <%} %>
+        </div>
+        <div class="query" runat="server">
             <a id="query">Query: </a>
             <asp:TextBox runat="server" ID="input" OnTextChanged="Input" CssClass="input"/>
             <asp:Button runat="server" CssClass="search" OnClick="Input" Text="Search"/>
@@ -34,7 +39,8 @@
                         </div>
                         <div class="inf">
                             <p class="infl"><a class="infttl">Created on </a><%:tab.CreatedAt.ToString("dd/MM/yyyy") %></p>
-                            <a class="infr" href="User?n=<%:creators[i].Username %>"><%:creators[i].Username %></a>
+                            <% var creator = master.DataManager.GetUser(tab.PosterUUID); %>
+                            <a class="infr" href="User?n=<%:creator.Username %>"><%:creator.Username %></a>
                         </div>
                     </div>
             <%} %>

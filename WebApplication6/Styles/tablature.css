@@ -30,11 +30,15 @@ body::-webkit-scrollbar {
     padding: 10px;
 }
 
-#content {
-    font-family: monospace;
+.content {
+    font-family: Roboto, sans-serif;
     color: white;
     padding-left: 10px;
     font-size: 20px;
+}
+
+.monospace {
+    font-family: monospace;
 }
 
 .stars {
@@ -126,6 +130,7 @@ main {
     outline: none;
     resize: none;
     box-sizing: border-box;
+    font-family: Roboto, sans-serif;
 }
 
 .submit {
@@ -146,4 +151,8 @@ main {
 .submit:hover {
     color: #0093ff;
     background-color: white;
+}
+
+.main {
+    width: 70%;
 }

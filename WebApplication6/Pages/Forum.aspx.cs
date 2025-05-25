@@ -3,14 +3,14 @@ using System.Web.UI;
 
 namespace WebApplication6
 {
-    public partial class TablaturesPage : Page
+    public partial class Forum : Page
     {
-        protected Tablature[] tablatures;
+        protected Post[] posts;
         protected SiteMaster master => (SiteMaster)Master;
         protected void Page_Load(object sender, EventArgs e)
         {
             string query = Request.QueryString["q"] ?? "";
-            tablatures = master.DataManager.GetTablatures(query);
+            posts = master.DataManager.GetPosts(query);
 
             if (!IsPostBack)
             {

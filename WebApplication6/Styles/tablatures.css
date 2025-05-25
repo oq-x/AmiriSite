@@ -16,6 +16,10 @@
     padding: 15px;
     border: 1px solid white;
     border-radius: 5px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .box .title {
@@ -37,13 +41,7 @@
     margin: 20px;
     gap: 25px;
     justify-content: center;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-}
-
-h1 {
-    font-family: Roboto, sans-serif;
-    color: white;
-    text-align: center;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
 }
 
 .input {
@@ -115,6 +113,7 @@ h1 {
     outline: none;
     text-align: left;
     width: 20%;
+    font-family: Roboto, sans-serif;
 }
 
 #query {
@@ -140,4 +139,43 @@ h1 {
 .search:hover {
     color: #0093ff;
     background-color: white;
+}
+
+.top {
+    position: relative;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    height: 60px; 
+}
+
+.newtab {
+    position: absolute;
+    right: 50px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    background-color: #0093ff;
+    padding: 8px 30px;
+    font-family: Roboto, sans-serif;
+    transition: 0.2s;
+}
+
+.newtab:hover {
+    background-color: white;
+    color: #0093ff;
+}
+
+h1 {
+    font-family: Roboto, sans-serif;
+    color: white;
+    margin: 0;
+}
+
+i {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: orange; 
+    font-size: 1.2em; 
 }

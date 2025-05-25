@@ -27,6 +27,10 @@ namespace WebApplication6
                 {
                     Response.Redirect("/Pages/Tablature?t=" + Request.QueryString.Get("t"));
                 }
+                else if (Request.QueryString.Get("p") != null)
+                {
+                    Response.Redirect("/Pages/Post?p=" + Request.QueryString.Get("p"));
+                }
                 else
                 {
                     Response.Redirect("/");

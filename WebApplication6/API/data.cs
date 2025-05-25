@@ -228,6 +228,43 @@ namespace WebApplication6
             sql.Close();
         }
 
+        public void InsertTablature(Tablature tab)
+        {
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = @"INSERT INTO Tablatures (UUID, PosterUUID, SongName, ArtistName, AlbumName, Content, TuningType, Difficulty, CreatedAt, Score, ScoreCount, ReleaseYear, Capo)
+                         VALUES (@UUID, @PosterUUID, @SongName, @ArtistName, @AlbumName, @Content, @TuningType, @Difficulty, @CreatedAt, @Score, @ScoreCount, @ReleaseYear, @Capo)";
+            SqlCommand cmd = new SqlCommand(query, sql);
+
+            cmd.Parameters.AddWithValue("@UUID", tab.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@PosterUUID", tab.PosterUUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@SongName", tab.SongName);
+            cmd.Parameters.AddWithValue("@ArtistName", tab.ArtistName);
+            cmd.Parameters.AddWithValue("@AlbumName", tab.AlbumName);
+            cmd.Parameters.AddWithValue("@Content", tab.Content);
+            cmd.Parameters.AddWithValue("@TuningType", tab.TuningType);
+            cmd.Parameters.AddWithValue("@Difficulty", tab.Difficulty);
+            cmd.Parameters.AddWithValue("@CreatedAt", tab.CreatedAt);
+            cmd.Parameters.AddWithValue("@Score", tab.Score);
+            cmd.Parameters.AddWithValue("@ScoreCount", tab.ScoreCount);
+            cmd.Parameters.AddWithValue("@ReleaseYear", tab.ReleaseYear);
+            cmd.Parameters.AddWithValue("@Capo", tab.Capo);
+
+            sql.Open();
+            cmd.ExecuteNonQuery();
+            sql.Close();
+        }
+
+        public Post GetPost(string uuid)
+        {
+            try
+            {
+                return GetPost(Guid.Parse(uuid));
+            }
+            catch
+            {
+                return null;
+            }
+        }
         public Post GetPost(Guid uuid)
         {
             var parameters = new Dictionary<string, object>
@@ -250,6 +287,16 @@ namespace WebApplication6
     };
 
             return GetPosts("PosterUUID = @PosterUUID", parameters);
+        }
+
+        public Post[] GetPosts(string query)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+        { "@QUERY", $"%{query}%" }
+    };
+
+            return GetPosts("Title LIKE @QUERY OR Content LIKE @QUERY", parameters);
         }
 
         public Post[] GetPosts()
@@ -310,13 +357,7 @@ namespace WebApplication6
         {
             try
             {
-                var parameters = new Dictionary<string, object>
-    {
-        { "@UUID", Guid.Parse(uuid).ToByteArray() }
-    };
-
-                Tablature[] results = GetTablatures("UUID = @UUID", parameters);
-                return results.Length > 0 ? results[0] : null;
+                return GetTablature(Guid.Parse(uuid));
             } catch
             {
                 return null;
@@ -487,36 +528,6 @@ namespace WebApplication6
                 }
             }
 
-        }
-
-        public int CommentCount(Post post)
-        {
-            return CommentCount(post.UUID);
-        }
-        public int CommentCount(Tablature tablature)
-        {
-            return CommentCount(tablature.UUID);
-        }
-
-        public int CommentCount(Guid post)
-        {
-            using (SqlConnection sql = new SqlConnection(_connectionString))
-            {
-                string query = "SELECT 1 FROM Comments WHERE PostUUID = @PostUUID";
-
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    cmd.Parameters.AddWithValue("@PostUUID", post);
-
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Comments");
-
-                    DataTable messageTable = dataSet.Tables[0];
-
-                    return messageTable.Rows.Count;
-                }
-            }
         }
     }
 

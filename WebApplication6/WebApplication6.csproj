@@ -135,6 +135,10 @@
     <Content Include="App_Data\Database1_log.ldf">
       <DependentUpon>Database1.mdf</DependentUpon>
     </Content>
+    <Content Include="Pages\Forum.aspx" />
+    <Content Include="Pages\NewPost.aspx" />
+    <Content Include="Pages\NewTablature.aspx" />
+    <Content Include="Pages\Post.aspx" />
     <Content Include="Pages\Tablature.aspx" />
     <Content Include="Pages\Register.aspx" />
     <Content Include="Pages\Tablatures.aspx" />
@@ -162,6 +166,34 @@
     <Compile Include="API\data.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Pages\Forum.aspx.cs">
+      <DependentUpon>Forum.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Forum.aspx.designer.cs">
+      <DependentUpon>Forum.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\NewPost.aspx.cs">
+      <DependentUpon>NewPost.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\NewPost.aspx.designer.cs">
+      <DependentUpon>NewPost.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\NewTablature.aspx.cs">
+      <DependentUpon>NewTablature.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\NewTablature.aspx.designer.cs">
+      <DependentUpon>NewTablature.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Post.aspx.cs">
+      <DependentUpon>Post.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Post.aspx.designer.cs">
+      <DependentUpon>Post.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Tablature.aspx.cs">
       <DependentUpon>Tablature.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -215,6 +247,7 @@
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
     </Compile>
+    <Content Include="Styles\newTablature.css" />
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

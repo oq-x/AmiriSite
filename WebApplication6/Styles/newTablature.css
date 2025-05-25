@@ -1,0 +1,86 @@
+﻿.top {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.publish {
+    position: absolute;
+    right: 50px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    background-color: #0093ff;
+    padding: 8px 30px;
+    font-size: 15px;
+    font-family: Roboto, sans-serif;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.publish:hover {
+    background-color: white;
+    color: #0093ff;
+}
+
+h1 {
+    font-family: Roboto, sans-serif;
+    color: white;
+    margin: 0;
+}
+
+h2 {
+    font-family: Roboto, sans-serif;
+    color: white;
+    margin: 0;
+    padding: 10px;
+}
+
+.short {
+    padding: 10px;
+    width: 50%;
+    margin-left: 10px;
+    outline: none;
+    border-radius: 5px;
+    border: none;
+    box-sizing: border-box;
+    font-family: Roboto, sans-serif;
+}
+
+.form {
+    display: flex;
+    width: 100%; 
+}
+
+.info,
+.content {
+    width: 50%;
+    box-sizing: border-box; 
+    padding: 10px; 
+}
+
+.long {
+    outline: none;
+    border-radius: 5px;
+    padding: 10px;
+    border: none;
+    resize: none;
+    width: 100%;
+    margin-right: 10px;
+    min-height: 540px;
+    box-sizing: border-box;
+    margin-left: 10px;
+    font-family: Roboto, sans-serif;
+}
+
+.errorMessage {
+    color: red;
+    font-family: Roboto, sans-serif;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    display: none;
+}

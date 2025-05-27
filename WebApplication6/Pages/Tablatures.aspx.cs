@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Web.UI;
 
 namespace WebApplication6
@@ -24,6 +25,33 @@ namespace WebApplication6
 
             string url = Request.Url.AbsolutePath + "?q=" + Server.UrlEncode(query);
             Response.Redirect(url);
+        }
+
+        public static string FormatCapoFret(int capoFret)
+        {
+            if (capoFret == 0)
+            {
+                return "None";
+            }
+            int ten = capoFret / 10;
+            int one = capoFret % 10;
+
+            if (one == 1 && ten != 1)
+            {
+                return $"{capoFret}st fret";
+            }
+            else if (one == 2 && ten != 1)
+            {
+                return $"{capoFret}nd fret";
+            }
+            else if (one == 3 && ten != 1)
+            {
+                return $"{capoFret}rd fret";
+            }
+            else
+            {
+                return $"{capoFret}th fret";
+            }
         }
     }
 }

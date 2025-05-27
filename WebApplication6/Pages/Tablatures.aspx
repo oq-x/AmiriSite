@@ -26,7 +26,7 @@
                             <div class="description">
                                 <a class="infttl">Tuning: </a><%:tab.TuningType %><br />
                                 <a class="infttl">Difficulty: </a><%:tab.Difficulty %><br />
-                                <a class="infttl">Capo: </a><%:tab.Capo > 0 ? tab.Capo.ToString() : "None" %><br />
+                                <a class="infttl">Capo: </a><%:FormatCapoFret(tab.Capo) %><br />
                             </div>
                             <div class="stars">
                                 <div class="stars-outer">

@@ -1,0 +1,21 @@
+﻿table {
+    color: white;
+    font-family: Roboto, sans-serif;
+    margin: 20vh auto;
+}
+
+.usersTable {
+    border-collapse: collapse;
+    width: 99%;
+}
+
+.usersTable th,
+.usersTable td {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: left;
+    white-space: normal; 
+    word-break: break-word; 
+    overflow-wrap: anywhere; 
+    max-width: 200px; 
+}

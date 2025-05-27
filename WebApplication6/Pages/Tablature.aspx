@@ -12,7 +12,7 @@
             <a class="inf"><strong>Album: </strong><%: tab.AlbumName %> (<%: tab.ReleaseYear %>)</a><br />
             <a class="inf"><strong>Tuning: </strong><%: tab.TuningType %></a><br />
             <a class="inf"><strong>Difficulty: </strong><%: tab.Difficulty %></a><br />
-            <a class="inf"><strong>Capo: </strong><%: tab.Capo > 0 ? tab.Capo.ToString() : "None" %></a><br />
+            <a class="inf"><strong>Capo: </strong><%: WebApplication6.TablaturesPage.FormatCapoFret(tab.Capo) %></a><br />
             <div class="stars">
                 <div class="stars-outer">
                     &#9733;&#9733;&#9733;&#9733;&#9733;

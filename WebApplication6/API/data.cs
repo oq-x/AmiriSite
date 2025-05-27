@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
-using System.Reflection;
+using Microsoft.Ajax.Utilities;
 
 namespace WebApplication6
 {
@@ -21,8 +21,8 @@ namespace WebApplication6
         public void CreateUser(User user)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt)
-                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt)";
+            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt, Admin)
+                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt, @Admin)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
             cmd.Parameters.AddWithValue("@UUID", user.UUID.ToByteArray());
@@ -36,6 +36,7 @@ namespace WebApplication6
             cmd.Parameters.AddWithValue("@AvatarURL", user.AvatarURL());
             cmd.Parameters.AddWithValue("@Token", user.token);
             cmd.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
+            cmd.Parameters.AddWithValue("@Admin", user.Admin);
 
             sql.Open();
             cmd.ExecuteNonQuery();
@@ -98,97 +99,84 @@ namespace WebApplication6
         private User[] GetUsers(string whereClause, Dictionary<string, object> parameters)
         {
 
-            using (SqlConnection sql = new SqlConnection(_connectionString))
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = "SELECT * FROM users";
+
+            if (!string.IsNullOrWhiteSpace(whereClause))
             {
-                string query = "SELECT * FROM users";
+                query += " WHERE " + whereClause;
+            }
 
-                if (!string.IsNullOrWhiteSpace(whereClause))
+            SqlCommand cmd = new SqlCommand(query, sql);
+            if (parameters != null)
+            {
+                foreach (var param in parameters)
                 {
-                    query += " WHERE " + whereClause;
-                }
-
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    if (parameters != null)
-                    {
-                        foreach (var param in parameters)
-                        {
-                            cmd.Parameters.AddWithValue(param.Key, param.Value);
-                        }
-                    }
-
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Users");
-
-                    DataTable userTable = dataSet.Tables[0];
-
-                    User[] users = new User[userTable.Rows.Count];
-
-                    for (int i = 0; i < users.Length; i++)
-                    {
-                        DataRow row = userTable.Rows[i];
- 
-                        users[i] = new User(
-                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
-                            (string)(row[userTable.Columns[1]]), //email
-                            (string)(row[userTable.Columns[2]]), //username
-                            (byte[])(row[userTable.Columns[3]]), //passwordhash
-                            (string)(row[userTable.Columns[4]]), //firstname
-                            (string)(row[userTable.Columns[5]]), //lastname
-                            (string)(row[userTable.Columns[6]]), //bio
-                            (string)(row[userTable.Columns[8]]), //avatarurl
-                            (byte[])(row[userTable.Columns[9]]), //token
-                            (DateTime)(row[userTable.Columns[10]]), //createdat
-                            (double)(row[userTable.Columns[7]]) //score
-                        );
-                    }
-
-                    return users;
+                    cmd.Parameters.AddWithValue(param.Key, param.Value);
                 }
             }
 
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataSet dataSet = new DataSet();
+            adapter.Fill(dataSet, "Users");
+
+            DataTable userTable = dataSet.Tables[0];
+
+            User[] users = new User[userTable.Rows.Count];
+
+            for (int i = 0; i < users.Length; i++)
+            {
+                DataRow row = userTable.Rows[i];
+ 
+                users[i] = new User(
+                    new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                    (string)(row[userTable.Columns[1]]), //email
+                    (string)(row[userTable.Columns[2]]), //username
+                    (byte[])(row[userTable.Columns[3]]), //passwordhash
+                    (string)(row[userTable.Columns[4]]), //firstname
+                    (string)(row[userTable.Columns[5]]), //lastname
+                    (string)(row[userTable.Columns[6]]), //bio
+                    (string)(row[userTable.Columns[8]]), //avatarurl
+                    (byte[])(row[userTable.Columns[9]]), //token
+                    (DateTime)(row[userTable.Columns[10]]), //createdat
+                    (bool)(row[userTable.Columns[11]]), //admin
+                    (double)(row[userTable.Columns[7]]) //score
+                );
+            }
+
+            return users;
         }
         public bool UserExistByEmail(string email)
         {
-            using (SqlConnection sql = new SqlConnection(_connectionString))
-            {
-                string query = "SELECT 1 FROM Users WHERE Email = @Email";
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = "SELECT 1 FROM Users WHERE Email = @Email";
 
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    cmd.Parameters.AddWithValue("@Email", email);
+            SqlCommand cmd = new SqlCommand(query, sql);
+            cmd.Parameters.AddWithValue("@Email", email);
 
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Users");
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataSet dataSet = new DataSet();
+            adapter.Fill(dataSet, "Users");
 
-                    DataTable userTable = dataSet.Tables[0];
+            DataTable userTable = dataSet.Tables[0];
 
-                    return userTable.Rows.Count > 0;
-                }
-            }
+            return userTable.Rows.Count > 0;
         }
 
         public bool UserExistByUsername(string username)
         {
-            using (SqlConnection sql = new SqlConnection(_connectionString))
-            {
-                string query = "SELECT 1 FROM Users WHERE Username = @Username";
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = "SELECT 1 FROM Users WHERE Username = @Username";
+            SqlCommand cmd = new SqlCommand(query, sql);
+            cmd.Parameters.AddWithValue("@Username", username);
 
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    cmd.Parameters.AddWithValue("@Username", username);
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataSet dataSet = new DataSet();
+            adapter.Fill(dataSet, "Users");
 
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Users");
+            DataTable userTable = dataSet.Tables[0];
 
-                    DataTable userTable = dataSet.Tables[0];
-
-                    return userTable.Rows.Count > 0;
-                }
-            }
+            return userTable.Rows.Count > 0;
         }
 
         public void InsertComment(Comment comment)
@@ -306,51 +294,46 @@ namespace WebApplication6
         private Post[] GetPosts(string whereClause, Dictionary<string, object> parameters)
         {
 
-            using (SqlConnection sql = new SqlConnection(_connectionString))
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = "SELECT * FROM posts";
+
+            if (!string.IsNullOrWhiteSpace(whereClause))
             {
-                string query = "SELECT * FROM posts";
+                query += " WHERE " + whereClause;
+            }
 
-                if (!string.IsNullOrWhiteSpace(whereClause))
+            SqlCommand cmd = new SqlCommand(query, sql);
+            if (parameters != null)
+            {
+                foreach (var param in parameters)
                 {
-                    query += " WHERE " + whereClause;
-                }
-
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    if (parameters != null)
-                    {
-                        foreach (var param in parameters)
-                        {
-                            cmd.Parameters.AddWithValue(param.Key, param.Value);
-                        }
-                    }
-
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Posts");
-
-                    DataTable userTable = dataSet.Tables[0];
-
-                    Post[] posts = new Post[userTable.Rows.Count];
-
-                    for (int i = 0; i < posts.Length; i++)
-                    {
-                        DataRow row = userTable.Rows[i];
-
-                        posts[i] = new Post(
-                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
-                            new Guid((byte[])(row[userTable.Columns[1]])), //posteruuid
-                            (string)(row[userTable.Columns[2]]), //content
-                            (DateTime)(row[userTable.Columns[3]]), //createdat
-                            (string)(row[userTable.Columns[4]]), //title
-                            (bool)(row[userTable.Columns[5]]) //pinned
-                        );
-                    }
-
-                    return posts;
+                    cmd.Parameters.AddWithValue(param.Key, param.Value);
                 }
             }
 
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataSet dataSet = new DataSet();
+            adapter.Fill(dataSet, "Posts");
+
+            DataTable userTable = dataSet.Tables[0];
+
+            Post[] posts = new Post[userTable.Rows.Count];
+
+            for (int i = 0; i < posts.Length; i++)
+            {
+                DataRow row = userTable.Rows[i];
+
+                posts[i] = new Post(
+                    new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                    new Guid((byte[])(row[userTable.Columns[1]])), //posteruuid
+                    (string)(row[userTable.Columns[2]]), //content
+                    (DateTime)(row[userTable.Columns[3]]), //createdat
+                    (string)(row[userTable.Columns[4]]), //title
+                    (bool)(row[userTable.Columns[5]]) //pinned
+                );
+            }
+
+            return posts;
         }
 
         public Tablature GetTablature(string uuid)
@@ -406,59 +389,52 @@ namespace WebApplication6
         }
         private Tablature[] GetTablatures(string whereClause, Dictionary<string, object> parameters)
         {
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = "SELECT * FROM tablatures";
 
-            using (SqlConnection sql = new SqlConnection(_connectionString))
+            if (!string.IsNullOrWhiteSpace(whereClause))
             {
-                string query = "SELECT * FROM tablatures";
-
-                if (!string.IsNullOrWhiteSpace(whereClause))
+                query += " WHERE " + whereClause;
+            }
+            SqlCommand cmd = new SqlCommand(query, sql);
+            if (parameters != null)
+            {
+                foreach (var param in parameters)
                 {
-                    query += " WHERE " + whereClause;
-                }
-
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    if (parameters != null)
-                    {
-                        foreach (var param in parameters)
-                        {
-                            cmd.Parameters.AddWithValue(param.Key, param.Value);
-                        }
-                    }
-
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Tablatures");
-
-                    DataTable userTable = dataSet.Tables[0];
-
-                    Tablature[] tablatures = new Tablature[userTable.Rows.Count];
-
-                    for (int i = 0; i < tablatures.Length; i++)
-                    {
-                        DataRow row = userTable.Rows[i];
-
-                        tablatures[i] = new Tablature(
-                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
-                            new Guid((byte[])(row[userTable.Columns[1]])), //posteruuid
-                            (string)(row[userTable.Columns[2]]), //songname
-                            (string)(row[userTable.Columns[3]]), //artistname
-                            (string)(row[userTable.Columns[4]]), //albumname
-                            (int)(row[userTable.Columns[11]]), // releaseyear
-                            (string)(row[userTable.Columns[5]]), //content
-                            (string)(row[userTable.Columns[6]]), //tuningtype
-                            (string)(row[userTable.Columns[7]]), //difficulty
-                            (DateTime)(row[userTable.Columns[8]]), //createdat
-                            (double)(row[userTable.Columns[9]]), //score
-                            (int)(row[userTable.Columns[10]]), //scorecount
-                            (int)(row[userTable.Columns[12]]) //capo
-                        );
-                    }
-
-                    return tablatures;
+                    cmd.Parameters.AddWithValue(param.Key, param.Value);
                 }
             }
 
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataSet dataSet = new DataSet();
+            adapter.Fill(dataSet, "Tablatures");
+
+            DataTable userTable = dataSet.Tables[0];
+
+            Tablature[] tablatures = new Tablature[userTable.Rows.Count];
+
+            for (int i = 0; i < tablatures.Length; i++)
+            {
+                DataRow row = userTable.Rows[i];
+
+                tablatures[i] = new Tablature(
+                    new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                    new Guid((byte[])(row[userTable.Columns[1]])), //posteruuid
+                    (string)(row[userTable.Columns[2]]), //songname
+                    (string)(row[userTable.Columns[3]]), //artistname
+                    (string)(row[userTable.Columns[4]]), //albumname
+                    (int)(row[userTable.Columns[11]]), // releaseyear
+                    (string)(row[userTable.Columns[5]]), //content
+                    (string)(row[userTable.Columns[6]]), //tuningtype
+                    (string)(row[userTable.Columns[7]]), //difficulty
+                    (DateTime)(row[userTable.Columns[8]]), //createdat
+                    (double)(row[userTable.Columns[9]]), //score
+                    (int)(row[userTable.Columns[10]]), //scorecount
+                    (int)(row[userTable.Columns[12]]) //capo
+                );
+            }
+
+            return tablatures;
         }
 
         public Comment[] GetComments(Post post)
@@ -484,50 +460,92 @@ namespace WebApplication6
         private Comment[] GetComments(string whereClause, Dictionary<string, object> parameters)
         {
 
-            using (SqlConnection sql = new SqlConnection(_connectionString))
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = "SELECT * FROM comments";
+
+            if (!string.IsNullOrWhiteSpace(whereClause))
             {
-                string query = "SELECT * FROM comments";
+                query += " WHERE " + whereClause;
+            }
 
-                if (!string.IsNullOrWhiteSpace(whereClause))
+            SqlCommand cmd = new SqlCommand(query, sql);
+            if (parameters != null)
+            {
+                foreach (var param in parameters)
                 {
-                    query += " WHERE " + whereClause;
-                }
-
-                using (SqlCommand cmd = new SqlCommand(query, sql))
-                {
-                    if (parameters != null)
-                    {
-                        foreach (var param in parameters)
-                        {
-                            cmd.Parameters.AddWithValue(param.Key, param.Value);
-                        }
-                    }
-
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    DataSet dataSet = new DataSet();
-                    adapter.Fill(dataSet, "Comments");
-
-                    DataTable userTable = dataSet.Tables[0];
-
-                    Comment[] comments = new Comment[userTable.Rows.Count];
-
-                    for (int i = 0; i < comments.Length; i++)
-                    {
-                        DataRow row = userTable.Rows[i];
-
-                        comments[i] = new Comment(
-                            new Guid((byte[])(row[userTable.Columns[0]])), //uuid
-                            new Guid((byte[])(row[userTable.Columns[1]])), //senderuuid
-                            (string)(row[userTable.Columns[2]]), //content
-                            (DateTime)(row[userTable.Columns[3]]), //createdat
-                            new Guid((byte[])(row[userTable.Columns[4]])) //postuuid
-                        );
-                    }
-
-                    return comments;
+                    cmd.Parameters.AddWithValue(param.Key, param.Value);
                 }
             }
 
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataSet dataSet = new DataSet();
+            adapter.Fill(dataSet, "Comments");
+
+            DataTable userTable = dataSet.Tables[0];
+
+            Comment[] comments = new Comment[userTable.Rows.Count];
+
+            for (int i = 0; i < comments.Length; i++)
+            {
+                DataRow row = userTable.Rows[i];
+
+                comments[i] = new Comment(
+                    new Guid((byte[])(row[userTable.Columns[0]])), //uuid
+                    new Guid((byte[])(row[userTable.Columns[1]])), //senderuuid
+                    (string)(row[userTable.Columns[2]]), //content
+                    (DateTime)(row[userTable.Columns[3]]), //createdat
+                    new Guid((byte[])(row[userTable.Columns[4]])) //postuuid
+                );
+            }
+
+            return comments;
+        }
+
+        public string BuildUsersTable(string query = "")
+        {
+            SqlConnection con = new SqlConnection(_connectionString);
+
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Users WHERE Username LIKE @QUERY OR FirstName LIKE @QUERY OR LastName LIKE @QUERY", con);
+            cmd.Parameters.AddWithValue("@QUERY", "%" + query + "%");
+
+            SqlDataAdapter ad = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+
+            ad.Fill(ds, "Users");
+
+            DataTable dt = ds.Tables[0];
+
+            string str = "<table class='usersTable'>";
+            str += "<tr>";
+            foreach (DataColumn column in dt.Columns)
+            {
+                str += "<th>" + column.ColumnName + "</th>";
+            }
+            str += "</tr>";
+
+            foreach (DataRow row in dt.Rows)
+            {
+                str += "<tr>";
+                foreach (DataColumn column in dt.Columns)
+                {
+                    object value = row[column];
+                    string cellValue;
+
+                    if (value is byte[] bytes)
+                    {
+                        cellValue = "0x"+BitConverter.ToString(bytes).Replace("-", "");
+                    }
+                    else
+                    {
+                        cellValue = value?.ToString() ?? "";
+                    }
+
+                    str += "<td>" + cellValue + "</td>";
+                }
+                str += "</tr>";
+            }
+            str += "</table>";
+            return str;
         }
     }
 
@@ -548,12 +566,15 @@ namespace WebApplication6
 
         public readonly byte[] token;
 
+        public readonly bool Admin;
+
         public User(
-            string email, 
-            string username, 
-            string password, 
-            string firstName, 
-            string lastName
+            string email,
+            string username,
+            string password,
+            string firstName,
+            string lastName,
+            bool admin = false
             )
         {
             UUID = Guid.NewGuid();
@@ -571,13 +592,13 @@ namespace WebApplication6
 
             byte[] token = SHA256.Create().ComputeHash(UUID.ToByteArray());
 
-            // combine both the uuid and password (XOR)
             for (int i = 0; i < token.Length; i++)
             {
                 token[i] ^= passwordHash[i];
             }
 
             this.token = token;
+            Admin = admin;
         }
 
         public User(
@@ -593,6 +614,7 @@ namespace WebApplication6
             string avatarURL,
             byte[] token,
             DateTime createdAt,
+            bool admin,
             double score = 0
         )
         {
@@ -608,9 +630,9 @@ namespace WebApplication6
             this.token = token;
             this.score = score;
             CreatedAt = createdAt;
+            Admin = admin;
         }
 
-        // this sets the password hash to the hash of the new password
         public void SetPassword(string password)
         {
             SHA256 sha256 = SHA256.Create();

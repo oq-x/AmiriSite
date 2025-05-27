@@ -135,6 +135,7 @@
     <Content Include="App_Data\Database1_log.ldf">
       <DependentUpon>Database1.mdf</DependentUpon>
     </Content>
+    <Content Include="Pages\About.aspx" />
     <Content Include="Pages\Forum.aspx" />
     <Content Include="Pages\NewPost.aspx" />
     <Content Include="Pages\NewTablature.aspx" />
@@ -143,8 +144,10 @@
     <Content Include="Pages\Register.aspx" />
     <Content Include="Pages\Tablatures.aspx" />
     <Content Include="Pages\User.aspx" />
+    <Content Include="Pages\UserList.aspx" />
     <Content Include="Scripts\login.js" />
     <Content Include="Scripts\register.js" />
+    <Content Include="Styles\about.css" />
     <Content Include="Styles\home.css" />
     <Content Include="Styles\login.css" />
     <Content Include="Styles\master.css" />
@@ -156,6 +159,7 @@
     <Content Include="Styles\tablature.css" />
     <Content Include="Styles\tablatures.css" />
     <Content Include="Styles\user.css" />
+    <Content Include="Styles\userList.css" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -166,6 +170,13 @@
     <Compile Include="API\data.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Pages\About.aspx.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\About.aspx.designer.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Forum.aspx.cs">
       <DependentUpon>Forum.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -231,6 +242,13 @@
     </Compile>
     <Compile Include="Pages\User.aspx.designer.cs">
       <DependentUpon>User.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UserList.aspx.cs">
+      <DependentUpon>UserList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\UserList.aspx.designer.cs">
+      <DependentUpon>UserList.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.Master.cs">

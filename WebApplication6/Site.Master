@@ -22,9 +22,12 @@
         <nav class="nav">
             <a class="nav-title" href="/">AmiriGuitarSite</a>
             <ul>
-                <li class="nav-crumb"><a class="nav-crumb-text" href="ChordTrainer">Chord Trainer</a></li>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="About">About</a></li>
                 <li class="nav-crumb"><a class="nav-crumb-text" href="Tablatures">Community Tablatures</a></li>
                 <li class="nav-crumb"><a class="nav-crumb-text" href="Forum">Forum</a></li>
+                <% if (CurrentUser()?.Admin??false) { %>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="UserList">User List</a></li>
+                <%} %>
             </ul>
 
             <% 

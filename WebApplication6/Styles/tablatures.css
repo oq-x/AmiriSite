@@ -98,6 +98,8 @@
     margin: auto auto auto 0;
     padding-top: 15px;
     padding-bottom: 15px;
+    max-width: 430px;
+    overflow-wrap: break-word;
 }
 
 .query {

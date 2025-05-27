@@ -1,0 +1,33 @@
+﻿#title, p {
+    font-family: Roboto, sans-serif;
+    color: white;
+    text-align: center;
+    word-break: break-word;
+}
+
+p {
+    max-width: 70%;
+    margin: 0 auto;
+    font-size: 25px;
+    direction: rtl;
+}
+
+.gallery {
+    display: flex;
+    margin: 15px;
+}
+
+#gilmour {
+    display: block;
+    margin: 0 auto;
+}
+
+.link {
+    color: #0093ff;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.link:hover {
+    color: white;
+}

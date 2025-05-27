@@ -27,7 +27,7 @@
             <%for(int i = 0; i < sortedPosts.Length; i++) {%>
                 <% var post = sortedPosts[i]; %>
                     <div class="box">
-                        <a href="Post?p=<%: post.UUID %>" class="title"><%: post.Title %></a>
+                        <a href="Post?p=<%: post.UUID %>" class="title"><%: post.Title.Length > 35 ? post.Title.Substring(0, 35) + "..." : post.Title %></a>
                         <% if (post.Pinned) { %>
                             <i class="fa-solid fa-thumbtack"></i>
                         <%} %>

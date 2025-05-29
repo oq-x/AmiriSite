@@ -86,6 +86,11 @@ body::-webkit-scrollbar {
     margin-top: 10px;
 }
 
+.message {
+    max-width: 430px;
+    overflow-wrap: break-word;
+}
+
 .author {
     font-weight: bold;
     font-size: 15px;

@@ -1,10 +1,4 @@
-﻿.title {
-    font-family: Roboto, sans-serif;
-    color: white;
-    margin-top: 0;
-}
-
-.subtext {
+﻿.subtext {
     font-family: Roboto, sans-serif;
     color: white;
     margin-bottom: 0;
@@ -23,10 +17,44 @@ subtext .info {
 
 .userbox {
     margin: 0 auto;
+    margin-bottom: 15px;
     width: 30%;
-    background-color: #393939;
     padding: 30px;
-    border-radius: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+.userbox .top {
+    display: flex;
+}
+
+.userbox .title {
+    font-family: Roboto, sans-serif;
+    color: white;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.userbox .button {
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    background-color: #0093ff;
+    padding: 10px 10px;
+    display: block;
+    width: 10%;
+    text-align: center;
+    cursor: pointer;
+    
+    margin: auto 0 auto auto;
+
+    transition: 0.2s;
+    font-family: Roboto, sans-serif;
+}
+
+.userbox .button:hover {
+    color: #0093ff;
+    background-color: white;
 }
 
 .infttl {
@@ -56,26 +84,15 @@ subtext .info {
     text-align: center;
     font-weight: bold;
     font-size: 30px;
-    margin: 20px;
+    margin: 10px;
     margin-top: 0;
-}
-
-.box .button {
     text-decoration: none;
-    color: white;
-    border-radius: 5px;
-    background-color: #0093ff;
-    padding: 10px 10px;
-    display: block;
-    width: 50%;
-    text-align: center;
-    margin: 0 auto;
     transition: 0.2s;
+    color: white;
 }
 
-.box .button:hover {
+.box .title:hover {
     color: #0093ff;
-    background-color: white;
 }
 
 .boxcontainer {
@@ -86,7 +103,61 @@ subtext .info {
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
 }
 
+#edituserbox .editUserField {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    outline: none;
+    font-family: Roboto, sans-serif;
+}
+
+#edituserbox .editUserLong {
+    padding: 5px;
+    width: 50%;
+    height: 100px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    resize: none;
+    font-family: Roboto, sans-serif;
+    box-sizing: border-box;
+}
+
+#edituserbox .error {
+    color: red;
+    font-family: Roboto, sans-serif;
+    text-align: center;
+    margin-bottom: 10px;
+    display: none;
+}
+
+#edituserbox .editUserSubmit {
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    background-color: #0093ff;
+    padding: 10px 10px;
+    display: block;
+    width: 50%;
+    text-align: center;
+    margin: 5px auto 5px 0;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+#edituserbox .editUserSubmit:hover {
+    color: #0093ff;
+    background-color: white;
+}
+
 .inf {
     text-align: center;
     margin-bottom: 0;
+}
+
+.invisible {
+   display: none;
 }

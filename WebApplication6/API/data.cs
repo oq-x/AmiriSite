@@ -42,6 +42,41 @@ namespace WebApplication6
             cmd.ExecuteNonQuery();
             sql.Close();
         }
+        public void UpdateUser(User user)
+        {
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = @"UPDATE Users
+                 SET Email = @Email,
+                     Username = @Username,
+                     PasswordHash = @PasswordHash,
+                     FirstName = @FirstName,
+                     LastName = @LastName,
+                     Bio = @Bio,
+                     Score = @Score,
+                     AvatarURL = @AvatarURL,
+                     Token = @Token,
+                     CreatedAt = @CreatedAt,
+                     Admin = @Admin
+                 WHERE UUID = @UUID";
+            SqlCommand cmd = new SqlCommand(query, sql);
+
+            cmd.Parameters.AddWithValue("@UUID", user.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Email", user.Email);
+            cmd.Parameters.AddWithValue("@Username", user.Username);
+            cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash());
+            cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", user.LastName);
+            cmd.Parameters.AddWithValue("@Bio", user.Bio());
+            cmd.Parameters.AddWithValue("@Score", user.Score());
+            cmd.Parameters.AddWithValue("@AvatarURL", user.AvatarURL());
+            cmd.Parameters.AddWithValue("@Token", user.token);
+            cmd.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
+            cmd.Parameters.AddWithValue("@Admin", user.Admin);
+
+            sql.Open();
+            cmd.ExecuteNonQuery();
+            sql.Close();
+        }
         public User GetUser(Guid uuid)
         {
             var parameters = new Dictionary<string, object>
@@ -179,6 +214,28 @@ namespace WebApplication6
             return userTable.Rows.Count > 0;
         }
 
+        public void AddScore(Tablature tab, double score)
+        {
+            int newScoreCount = tab.ScoreCount+1;
+            double x = tab.Score * newScoreCount;
+            double newScore = (x + score) / newScoreCount;
+
+            SqlConnection sql = new SqlConnection(_connectionString);
+            string query = @"UPDATE Tablatures
+                 SET Score = @Score,
+                     ScoreCount = @ScoreCount,
+                 WHERE UUID = @UUID";
+            SqlCommand cmd = new SqlCommand(query, sql);
+
+            cmd.Parameters.AddWithValue("@UUID", tab.UUID.ToByteArray());
+            cmd.Parameters.AddWithValue("@Score", newScore);
+            cmd.Parameters.AddWithValue("@ScoreCount", newScoreCount);
+
+            sql.Open();
+            cmd.ExecuteNonQuery();
+            sql.Close();
+        }
+
         public void InsertComment(Comment comment)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
@@ -195,6 +252,17 @@ namespace WebApplication6
             sql.Open();
             cmd.ExecuteNonQuery();
             sql.Close();
+
+            try
+            {
+                User poster = GetUser(comment.SenderUUID);
+                poster.UpdateScore(comment);
+                UpdateUser(poster);
+            }
+            catch
+            {
+
+            }
         }
       
         public void InsertPost(Post post)
@@ -214,6 +282,17 @@ namespace WebApplication6
             sql.Open();
             cmd.ExecuteNonQuery();
             sql.Close();
+
+            try
+            {
+                User poster = GetUser(post.PosterUUID);
+                poster.UpdateScore(post);
+                UpdateUser(poster);
+            }
+            catch
+            {
+
+            }
         }
 
         public void InsertTablature(Tablature tab)
@@ -240,6 +319,18 @@ namespace WebApplication6
             sql.Open();
             cmd.ExecuteNonQuery();
             sql.Close();
+
+
+            try
+            {
+                User poster = GetUser(tab.PosterUUID);
+                poster.UpdateScore(tab);
+                UpdateUser(poster);
+            }
+            catch
+            {
+
+            }
         }
 
         public Post GetPost(string uuid)
@@ -501,11 +592,11 @@ namespace WebApplication6
             return comments;
         }
 
-        public string BuildUsersTable(string query = "")
+        public string BuildUsersTable(string query = "", string orderByColumn = "", string order = "")
         {
             SqlConnection con = new SqlConnection(_connectionString);
 
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Users WHERE Username LIKE @QUERY OR FirstName LIKE @QUERY OR LastName LIKE @QUERY", con);
+            SqlCommand cmd = new SqlCommand($"SELECT * FROM Users WHERE Username LIKE @QUERY OR FirstName LIKE @QUERY OR LastName LIKE @QUERY{(string.IsNullOrWhiteSpace(orderByColumn) ? "" : $" ORDER BY {orderByColumn} {order}")}", con);
             cmd.Parameters.AddWithValue("@QUERY", "%" + query + "%");
 
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
@@ -552,7 +643,7 @@ namespace WebApplication6
     public class User
     {
         public readonly Guid UUID;
-        public readonly string Email;
+        public string Email;
         public readonly string Username;
         private byte[] passwordHash;
         private string bio;
@@ -655,6 +746,8 @@ namespace WebApplication6
         public double Score() { return score; }
         public string AvatarURL() { return avatarURL; }
 
+        public bool Is(User user) { return UUID.Equals(user.UUID); }
+
         public byte[] PasswordHash() { return passwordHash; }
 
         public bool IsPasswordEqual(string password)
@@ -687,7 +780,32 @@ namespace WebApplication6
                 return;
             }
 
-            double i = (double)comment.Content.Length / 20;
+            double i = (double)comment.Content.Length / 100;
+            i *= ((double)(new Random()).Next(0, 101)) / 100;
+
+            score += (score * i) + i;
+        }
+        public void UpdateScore(Post post)
+        {
+            if (post == null || !post.PosterUUID.Equals(UUID))
+            {
+                return;
+            }
+
+            double i = (double)post.Content.Length / 100;
+            i *= ((double)(new Random()).Next(0, 101)) / 100;
+
+            score += (score * i) + i;
+        }
+
+        public void UpdateScore(Tablature tab)
+        {
+            if (tab == null || !tab.PosterUUID.Equals(UUID))
+            {
+                return;
+            }
+
+            double i = tab.Score / 5;
             i *= ((double)(new Random()).Next(0, 101)) / 100;
 
             score += (score * i) + i;
@@ -754,6 +872,8 @@ namespace WebApplication6
             CreatedAt = DateTime.Now;
             PostUUID = tablature.UUID;
         }
+
+        public bool Is(Comment comment) { return UUID.Equals(comment.UUID); }
     }
 
     public class Post
@@ -809,6 +929,8 @@ namespace WebApplication6
             Title = title;
             Pinned = false;
         }
+
+        public bool Is(Post post) { return UUID.Equals(post.UUID); }
     }
     public class Tablature
     {
@@ -910,5 +1032,7 @@ namespace WebApplication6
             ScoreCount = 0;
             Capo = capo;
         }
+
+        public bool Is(Tablature tab) { return UUID.Equals(tab.UUID); }
     }
 }

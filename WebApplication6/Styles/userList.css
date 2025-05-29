@@ -1,7 +1,7 @@
 ﻿table {
     color: white;
     font-family: Roboto, sans-serif;
-    margin: 20vh auto;
+    margin: 5vh auto;
 }
 
 .usersTable {
@@ -18,4 +18,75 @@
     word-break: break-word; 
     overflow-wrap: anywhere; 
     max-width: 200px; 
+}
+
+.query {
+    display: flex;
+    margin: 5px;
+}
+
+.centered {
+    justify-content: center;
+}
+
+.notcentered {
+    margin-top: 50px;
+    margin-left: 15px;
+}
+
+.input {
+    padding: 5px;
+    font-size: 15px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    text-align: left;
+    width: 20%;
+    font-family: Roboto, sans-serif;
+}
+
+.queryText {
+    font-family: Roboto, sans-serif;
+    color: white;
+    padding: 5px;
+    margin: auto 0 auto 0;
+}
+
+.search {
+    font-family: Roboto, sans-serif;
+    color: white;
+    margin: auto 5px auto 5px;
+    border-radius: 5px;
+    background-color: #0093ff;
+    padding: 8px 30px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.search:hover {
+    color: #0093ff;
+    background-color: white;
+}
+
+.top {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.radio input[type="radio"] {
+    width: 20px;
+    height: 100%;
+    transform: scale(1.5);
+    accent-color: #0078D4;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    vertical-align: middle;
+
+    margin: 0 5px;
 }

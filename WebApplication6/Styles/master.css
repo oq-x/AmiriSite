@@ -22,13 +22,13 @@ body {
     color: white;
     text-decoration: none;
     font-family: Roboto, sans-serif;
+    transition: 0.2s;
 }
 
 .nav-title:hover,
 .nav-username:hover {
-    color: #d6dce1;
+    color: #0093ff;
 }
-
 
 .nav ul {
     position: absolute;
@@ -49,8 +49,9 @@ body {
     color: white;
     text-decoration: none;
     font-family: Roboto, sans-serif;
+    transition: 0.2s;
 }
 
 .nav-crumb-text:hover {
-    color: #d6dce1;
+    color: #0093ff;
 }

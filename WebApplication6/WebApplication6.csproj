@@ -140,6 +140,7 @@
     <Content Include="Pages\NewPost.aspx" />
     <Content Include="Pages\NewTablature.aspx" />
     <Content Include="Pages\Post.aspx" />
+    <Content Include="Pages\Statistics.aspx" />
     <Content Include="Pages\Tablature.aspx" />
     <Content Include="Pages\Register.aspx" />
     <Content Include="Pages\Tablatures.aspx" />
@@ -204,6 +205,13 @@
     </Compile>
     <Compile Include="Pages\Post.aspx.designer.cs">
       <DependentUpon>Post.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Statistics.aspx.cs">
+      <DependentUpon>Statistics.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Statistics.aspx.designer.cs">
+      <DependentUpon>Statistics.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Tablature.aspx.cs">
       <DependentUpon>Tablature.aspx</DependentUpon>

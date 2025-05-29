@@ -23,6 +23,8 @@ namespace WebApplication6
                 }
                 Session["token"] = user.Token();
                 Session["login"] = true;
+
+                Application["numUsersTotal"] = (int)Application["numUsersTotal"] + 1;
                 if (Request.QueryString.Get("t") != null)
                 {
                     Response.Redirect("/Pages/Tablature?t=" + Request.QueryString.Get("t"));

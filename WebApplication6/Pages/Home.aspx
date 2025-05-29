@@ -33,13 +33,6 @@
                     <a class="button" href="Tablatures">Go</a>
                 </div>
                 <div class="box">
-                    <h1 class="title">Chord trainer</h1>
-
-                    <p class="description">Practice your chords by memorizing the notes</p>
-
-                    <a class="button" href="ChordTrainer">Go</a>
-                </div>
-                <div class="box">
                     <h1 class="title">Forum</h1>
 
                     <p class="description">Discuss with other guitar players</p>

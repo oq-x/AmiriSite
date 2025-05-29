@@ -28,6 +28,7 @@
                 <% if (CurrentUser()?.Admin??false) { %>
                 <li class="nav-crumb"><a class="nav-crumb-text" href="UserList">User List</a></li>
                 <%} %>
+                <li class="nav-crumb"><a class="nav-crumb-text" href="Statistics">Statistics</a></li>
             </ul>
 
             <% 

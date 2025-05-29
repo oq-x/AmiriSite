@@ -15,18 +15,19 @@ namespace WebApplication6
 
             Application["dataManager"] = DataManager;
             Application["numVisitorsOnline"] = 0;
+            Application["numUsersTotal"] = 0;
             Application["numVisitorsTotal"] = 0;
         }
 
         void Session_Start(object sender, EventArgs e)
         {
-            Application["numVisitorsOnline"] = (int)Application["numVisitorsOnline"] +1;
+            Application["numVisitorsOnline"] = (int)Application["numVisitorsOnline"] + 1;
             Application["numVisitorsTotal"] = (int)Application["numVisitorsTotal"] + 1;
         }
 
         void Session_End(object sender, EventArgs e)
         {
-            Application["numVisitorsOnline"] = (int)Application["numVisitorsOnline"] -1;
+            Application["numVisitorsOnline"] = (int)Application["numVisitorsOnline"] - 1;
         }
     }
 }

@@ -11,12 +11,5 @@ namespace WebApplication6
         {
 
         }
-
-        protected void LogOut(object sender, EventArgs e)
-        {
-            Session.Abandon();
-
-            Response.Redirect("/");
-        }
     }
 }

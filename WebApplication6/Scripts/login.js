@@ -8,7 +8,8 @@ registerLink.href = "Register" + query;
  * @param {MouseEvent} e
  */
 function login(e) {
-    const emailInput = document.getElementById("email") if (emailInput.value == "" || !emailInput.checkValidity()) {
+    const emailInput = document.getElementById("email") 
+    if (emailInput.value == "" || !emailInput.checkValidity()) {
         setError("Invalid email!")
         e.preventDefault()
         return

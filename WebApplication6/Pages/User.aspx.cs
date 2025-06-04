@@ -11,6 +11,11 @@ namespace WebApplication6
         protected Post[] posts;
         protected SiteMaster master => (SiteMaster)Master;
         protected bool canEdit;
+        protected bool isMe;
+        protected void LogOut(object sender, EventArgs e)
+        {
+            master.LogOut(sender, e);
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             string name = Request.QueryString["n"];
@@ -43,7 +48,8 @@ namespace WebApplication6
                 tablatures = master.DataManager.GetTablatures(user);
                 posts = master.DataManager.GetPosts(user);
 
-                canEdit = (master.CurrentUser()?.Is(user) ?? false) || (master.CurrentUser()?.Admin ?? false);
+                isMe = master.CurrentUser()?.Is(user) ?? false;
+                canEdit = isMe || (master.CurrentUser()?.Admin ?? false);
                 Page.Title = user.Username;
 
                 if (canEdit && !IsPostBack)

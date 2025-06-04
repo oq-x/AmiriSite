@@ -9,18 +9,41 @@
         <div class="userbox">
             <div class="top">
                 <h1 class="title"><%: user.Username %></h1>
-                <% if (canEdit) { %>
-                    <a id="edituserbutton" class="button" onclick="document.getElementById('edituserbox').style['display'] = 'block'; document.getElementById('edituserbutton').style['display'] = 'none'">Edit</a>
-                <%} %>
+                <div class="topbuttons">
+                    <% if (canEdit) { %>
+                        <a id="edituserbutton" class="button" onclick="document.getElementById('edituserbox').style['display'] = 'block'; document.getElementById('edituserbutton').style['display'] = 'none'">Edit</a>
+                    <%} %>
+                    <% if (isMe) { %>
+                        <asp:Button runat="server" Text="Log Out" CssClass="logout" OnClick="LogOut" />
+                    <%} %>
+                </div>
             </div>
-            <p class="subtext">
+            <div class="subtext">
                 <span class="bio"><%: user.Bio().Length > 0 ? user.Bio() : "No bio yet" %></span>
-                <span class="info">
+                <div class="info">
                     <a class="infttl">Email</a>: <%: user.Email %><br />
                     <a class="infttl">Score</a>: <%: user.Score().ToString("F2") %><br />
-                    <a class="infttl">Joined: </a><%: user.CreatedAt.ToString("dd/MM/yyyy") %>
-                </span>
-            </p>
+                    <a class="infttl">Joined: </a><%: user.CreatedAt.ToString("dd/MM/yyyy") %><br />
+                    <%
+                        string parsedDate = "";
+                        try
+                        {
+                            parsedDate = DateTime.ParseExact(user.Birthday, "yyyy-MM-dd", null).ToString("dd/MM/yyyy");
+                        } catch
+                        {
+                            parsedDate = "idk";
+                        }
+                    %>
+                    <a class="infttl">Birthday: </a><%:parsedDate %><br />
+                    <% string gender = user.Gender;
+                        if (gender == "klein")
+                        {
+                            gender = "<img width=\"100\" src=\"../Assets/klein.png\"/>";
+                        }
+                    %>
+                    <div class="infimg"><a class="infttl">Gender: </a><%=gender %></div>
+                </div>
+            </div>
         </div>
         <% if (canEdit) { %>
         <div class="userbox invisible" id="edituserbox">

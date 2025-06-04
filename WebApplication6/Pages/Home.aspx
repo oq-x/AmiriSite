@@ -40,9 +40,5 @@
                     <a class="button" href="Forum">Go</a>
                 </div>
             </div>
-            <% if (user != null)
-                { %>
-                <asp:Button runat="server" Text="Log Out" CssClass="logout" OnClick="LogOut" />
-            <%} %>
     </main>
 </asp:Content>

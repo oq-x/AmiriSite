@@ -16,6 +16,11 @@ namespace WebApplication6
 
                 string firstName = Request.Form["fname"];
                 string lastName = Request.Form["lname"];
+                string phone = Request.Form["phone"];
+                string birthday = Request.Form["birthday"];
+
+                string securityQuestion = Request.Form["securityQuestion"];
+                string securityAnswer = Request.Form["securityAnswer"];
 
                 if (username.Length < 3 || username.Length > 15)
                 {
@@ -55,7 +60,7 @@ namespace WebApplication6
                     return;
                 }
 
-                User user = new User(email, username, password, firstName, lastName);
+                User user = new User(email, username, password, firstName, lastName, phone, birthday, gender.Value, securityQuestion, securityAnswer);
 
                 master.DataManager.CreateUser(user);
 

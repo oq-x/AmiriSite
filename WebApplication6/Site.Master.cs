@@ -18,6 +18,12 @@ namespace WebApplication6
             return DataManager.Authenticate(token);
 
         }
+        public void LogOut(object sender, EventArgs e)
+        {
+            Session.Abandon();
+
+            Response.Redirect("/");
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
         }

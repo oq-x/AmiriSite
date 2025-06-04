@@ -2,6 +2,7 @@
  * Login function
  * @param {MouseEvent} e
  */
+
 function register(e) {
     const emailInput = document.getElementById("email")
     if (emailInput.value == "" || !emailInput.checkValidity()) {
@@ -45,6 +46,23 @@ function register(e) {
         e.preventDefault()
     } else {
         setError("")
+    }
+
+    const phoneInput = document.getElementById("phone")
+    if (phoneInput.value == null || !phoneInput.checkValidity()) {
+        setError("Phone number must be in this format: 0XX-XXXXXXX")
+        e.preventDefault()
+    } else {
+        setError("")
+    }
+
+    const gender = document.querySelector('input[name="gender"]:checked');
+    if (!gender) {
+        setError("You must select a gender!")
+        e.preventDefault()
+    } else {
+        setError("")
+        window.hiddenGender.value = gender.id;
     }
 }
 

@@ -5,3 +5,35 @@
 .name .input {
     width: 38%;
 }
+
+input {
+    font-family: Roboto, sans-serif;
+}
+
+input[type=radio] {
+    transform: scale(1.5)
+}
+
+.gender-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.gender-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+}
+
+.select {
+    display: block;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin: 10px auto;
+    outline: none;
+    width: 55%;
+}

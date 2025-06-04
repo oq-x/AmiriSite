@@ -40,13 +40,10 @@ subtext .info {
     color: white;
     border-radius: 5px;
     background-color: #0093ff;
-    padding: 10px 10px;
+    padding: 10px 30px;
     display: block;
-    width: 10%;
     text-align: center;
     cursor: pointer;
-    
-    margin: auto 0 auto auto;
 
     transition: 0.2s;
     font-family: Roboto, sans-serif;
@@ -160,4 +157,36 @@ subtext .info {
 
 .invisible {
    display: none;
+}
+
+.logout {
+    background-color: #f51c15;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    padding: 8px 30px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-left: 10px;
+}
+
+.topbuttons {
+    margin: auto 0 auto auto;
+    display: flex;
+}
+
+.logout:hover {
+    color: #f51c15;
+    background-color: white;
+}
+
+img {
+    display: block;
+    margin: 5px;
+}
+
+.infimg {
+    display: flex;
 }

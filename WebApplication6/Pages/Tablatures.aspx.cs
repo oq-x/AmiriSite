@@ -31,7 +31,7 @@ namespace WebApplication6
         {
             if (capoFret == 0)
             {
-                return "None";
+                return "No";
             }
             int ten = capoFret / 10;
             int one = capoFret % 10;

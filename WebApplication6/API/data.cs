@@ -21,8 +21,8 @@ namespace WebApplication6
         public void CreateUser(User user)
         {
             SqlConnection sql = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt, Admin)
-                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt, @Admin)";
+            string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt, Admin, Phone, Birthday, Gender, SecurityQuestion, SecurityAnswer)
+                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt, @Admin, @Phone, @Birthday, @Gender, SecurityQuestion, SecurityAnswer)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
             cmd.Parameters.AddWithValue("@UUID", user.UUID.ToByteArray());
@@ -37,6 +37,11 @@ namespace WebApplication6
             cmd.Parameters.AddWithValue("@Token", user.token);
             cmd.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
             cmd.Parameters.AddWithValue("@Admin", user.Admin);
+            cmd.Parameters.AddWithValue("@Phone", user.Phone);
+            cmd.Parameters.AddWithValue("@Birthday", user.Birthday);
+            cmd.Parameters.AddWithValue("@Gender", user.Gender);
+            cmd.Parameters.AddWithValue("@SecurityQuestion", user.SecurityQuestion);
+            cmd.Parameters.AddWithValue("@SecurityAnswer", user.SecurityAnswer);
 
             sql.Open();
             cmd.ExecuteNonQuery();
@@ -47,16 +52,21 @@ namespace WebApplication6
             SqlConnection sql = new SqlConnection(_connectionString);
             string query = @"UPDATE Users
                  SET Email = @Email,
-                     Username = @Username,
-                     PasswordHash = @PasswordHash,
-                     FirstName = @FirstName,
-                     LastName = @LastName,
-                     Bio = @Bio,
-                     Score = @Score,
-                     AvatarURL = @AvatarURL,
-                     Token = @Token,
-                     CreatedAt = @CreatedAt,
-                     Admin = @Admin
+                    Username = @Username,
+                    PasswordHash = @PasswordHash,
+                    FirstName = @FirstName,
+                    LastName = @LastName,
+                    Bio = @Bio,
+                    Score = @Score,
+                    AvatarURL = @AvatarURL,
+                    Token = @Token,
+                    CreatedAt = @CreatedAt,
+                    Admin = @Admin,
+                    Phone = @Phone, 
+                    Birthday = @Birthday
+                    Gender = @Gender, 
+                    SecurityQuestion = @SecurityQuestion, 
+                    SecurityAnswer = @SecurityAnswer
                  WHERE UUID = @UUID";
             SqlCommand cmd = new SqlCommand(query, sql);
 
@@ -72,6 +82,11 @@ namespace WebApplication6
             cmd.Parameters.AddWithValue("@Token", user.token);
             cmd.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
             cmd.Parameters.AddWithValue("@Admin", user.Admin);
+            cmd.Parameters.AddWithValue("@Phone", user.Phone);
+            cmd.Parameters.AddWithValue("@Birthday", user.Birthday);
+            cmd.Parameters.AddWithValue("@Gender", user.Gender);
+            cmd.Parameters.AddWithValue("@SecurityQuestion", user.SecurityQuestion);
+            cmd.Parameters.AddWithValue("@SecurityAnswer", user.SecurityAnswer);
 
             sql.Open();
             cmd.ExecuteNonQuery();
@@ -175,6 +190,11 @@ namespace WebApplication6
                     (byte[])(row[userTable.Columns[9]]), //token
                     (DateTime)(row[userTable.Columns[10]]), //createdat
                     (bool)(row[userTable.Columns[11]]), //admin
+                    (string)(row[userTable.Columns[12]]), //phone
+                    (string)(row[userTable.Columns[13]]), //birthday
+                    (string)(row[userTable.Columns[14]]), //gender
+                    (string)(row[userTable.Columns[15]]), //securityquestion
+                    (string)(row[userTable.Columns[16]]), //securityanswer
                     (double)(row[userTable.Columns[7]]) //score
                 );
             }
@@ -196,6 +216,34 @@ namespace WebApplication6
             DataTable userTable = dataSet.Tables[0];
 
             return userTable.Rows.Count > 0;
+        }
+
+        public bool TryResetPassword(User user, string newPassword, string securityAnswer)
+        {
+            if (user.SecurityAnswer != securityAnswer)
+            {
+                return false;
+            }
+            user.SetPassword(newPassword);
+
+            UpdateUser(user);
+            return true;
+        }
+        public bool TryResetPassword(Guid userUUID, string newPassword, string securityAnswer)
+        {
+            User user = GetUser(userUUID);
+            if (user == null)
+            {
+                return false;
+            }
+            if (user.SecurityAnswer != securityAnswer)
+            {
+                return false;
+            }
+            user.SetPassword(newPassword);
+
+            UpdateUser(user);
+            return true;
         }
 
         public bool UserExistByUsername(string username)
@@ -659,12 +707,23 @@ namespace WebApplication6
 
         public readonly bool Admin;
 
+        public readonly string Phone;
+        public readonly string Birthday;
+        public readonly string Gender;
+
+        public readonly string SecurityQuestion;
+        public readonly string SecurityAnswer;
         public User(
             string email,
             string username,
             string password,
             string firstName,
             string lastName,
+            string phone,
+            string birthday,
+            string gender,
+            string securityQuestion,
+            string securityAnswer,
             bool admin = false
             )
         {
@@ -690,6 +749,13 @@ namespace WebApplication6
 
             this.token = token;
             Admin = admin;
+
+            Phone = phone;
+            Birthday = birthday;
+            Gender = gender;
+
+            SecurityQuestion = securityQuestion;
+            SecurityAnswer = securityAnswer;
         }
 
         public User(
@@ -706,6 +772,11 @@ namespace WebApplication6
             byte[] token,
             DateTime createdAt,
             bool admin,
+            string phone,
+            string birthday,
+            string gender,
+            string securityQuestion,
+            string securityAnswer,
             double score = 0
         )
         {
@@ -722,6 +793,12 @@ namespace WebApplication6
             this.score = score;
             CreatedAt = createdAt;
             Admin = admin;
+
+            Phone = phone;
+            Birthday = birthday;
+            Gender = gender;
+            SecurityQuestion = securityQuestion;
+            SecurityAnswer = securityAnswer;
         }
 
         public void SetPassword(string password)

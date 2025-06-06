@@ -21,8 +21,7 @@ namespace WebApplication6
                     Session["error"] = "Wrong password!";
                     return;
                 }
-                Session["token"] = user.Token();
-                Session["login"] = true;
+                master.SetCurrentUser(user);
 
                 Application["numUsersTotal"] = (int)Application["numUsersTotal"] + 1;
                 if (Request.QueryString.Get("t") != null)

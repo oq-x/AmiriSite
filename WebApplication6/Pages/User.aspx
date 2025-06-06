@@ -35,16 +35,25 @@
                         }
                     %>
                     <a class="infttl">Birthday: </a><%:parsedDate %><br />
-                    <% string gender = user.Gender;
+                    <% 
+                        string gender = user.Gender;
+                        bool imgG = false;
                         if (gender == "klein")
                         {
                             gender = "<img width=\"100\" src=\"../Assets/klein.png\"/>";
+                            imgG = true;
                         }
                     %>
-                    <div class="infimg"><a class="infttl">Gender: </a><%=gender %></div>
+                    <% if (imgG) { %>
+                    <div class="infimg">
+                    <% } %>
+                        <a class="infttl">Gender: </a><%=gender %>
+                    <% if (imgG) { %>
+                    </div>
+                    <% } %>
                 </div>
             </div>
-        </div>
+        </div>s
         <% if (canEdit) { %>
         <div class="userbox invisible" id="edituserbox">
             <h1 class="title">Edit User</h1>

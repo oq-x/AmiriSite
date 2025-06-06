@@ -16,10 +16,9 @@
     font-size: 25px;
     color: white;
     font-family: Roboto, sans-serif;
-    margin: 10px;
 }
 
-.form #submit {
+.form .submit {
     display: block;
     margin: 10px auto 0 auto;
     width: 30%;
@@ -32,7 +31,7 @@
     background-color: #0093ff;
     transition: 0.2s;
 }
-.form #submit:hover {
+.form .submit:hover {
     color: #0093ff;
     background-color: white;
 }

@@ -2,6 +2,9 @@
     display: flex;
 }
 
+.form label {
+    margin: 10px;
+}
 .name .input {
     width: 38%;
 }

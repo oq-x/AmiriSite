@@ -11,6 +11,16 @@ namespace WebApplication6
             if (Session["login"] == null || !(bool)Session["login"]) return null;
             return (string)Session["token"];
         }
+
+        public void SetCurrentUser(string token)
+        {
+            Session["login"] = true;
+            Session["token"] = token;
+        }
+        public void SetCurrentUser(User user)
+        {
+            SetCurrentUser(user.Token());
+        }
         public User CurrentUser()
         {
             string token = CurrentToken();

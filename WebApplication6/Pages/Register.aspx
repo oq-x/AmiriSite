@@ -172,7 +172,7 @@
             <% Session["error"] = null;%>
             <p>Already have an account? <a href="Login">Login</a></p>
 
-            <input type="submit" id="submit" onclick="register(event)" name="submit" value="Register" />
+            <input type="submit" class="submit" onclick="register(event)" name="submit" value="Register" />
         </div>
         </div>
     </main>

@@ -19,9 +19,10 @@
 
             <p id="error" style="color: red;"><%:Session["error"] %></p>
             <% Session["error"] = null; %>
+            <p>Forgot your password? <a href="ResetPassword">Reset</a></p>
             <p>Don't have an account? <a href="Register">Register</a></p>
 
-            <input type="submit" id="submit" onclick="login(event)" name="submit" value="Login">
+            <input type="submit" class="submit" onclick="login(event)" name="submit" value="Login">
         </div>
         </div>
     </main>

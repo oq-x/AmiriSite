@@ -22,7 +22,7 @@ namespace WebApplication6
         {
             SqlConnection sql = new SqlConnection(_connectionString);
             string query = @"INSERT INTO Users (UUID, Email, Username, PasswordHash, FirstName, LastName, Bio, Score, AvatarURL, Token, CreatedAt, Admin, Phone, Birthday, Gender, SecurityQuestion, SecurityAnswer)
-                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt, @Admin, @Phone, @Birthday, @Gender, SecurityQuestion, SecurityAnswer)";
+                         VALUES (@UUID, @Email, @Username, @PasswordHash, @FirstName, @LastName, @Bio, @Score, @AvatarURL, @Token, @CreatedAt, @Admin, @Phone, @Birthday, @Gender, @SecurityQuestion, @SecurityAnswer)";
             SqlCommand cmd = new SqlCommand(query, sql);
 
             cmd.Parameters.AddWithValue("@UUID", user.UUID.ToByteArray());
@@ -63,7 +63,7 @@ namespace WebApplication6
                     CreatedAt = @CreatedAt,
                     Admin = @Admin,
                     Phone = @Phone, 
-                    Birthday = @Birthday
+                    Birthday = @Birthday,
                     Gender = @Gender, 
                     SecurityQuestion = @SecurityQuestion, 
                     SecurityAnswer = @SecurityAnswer
@@ -218,32 +218,33 @@ namespace WebApplication6
             return userTable.Rows.Count > 0;
         }
 
-        public bool TryResetPassword(User user, string newPassword, string securityAnswer)
+        public string TryResetPassword(User user, string newPassword, string securityQuestion, string securityAnswer)
         {
+            if (user.SecurityQuestion != securityQuestion)
+            {
+                return "Question doesn't match!";
+            }
             if (user.SecurityAnswer != securityAnswer)
             {
-                return false;
+                return "Wrong answer!";
             }
-            user.SetPassword(newPassword);
+
+            if (!user.SetPassword(newPassword))
+            {
+                return "Password cannot be the same as old password!";
+            }
 
             UpdateUser(user);
-            return true;
+            return "";
         }
-        public bool TryResetPassword(Guid userUUID, string newPassword, string securityAnswer)
+        public string TryResetPassword(Guid userUUID, string newPassword, string securityQuestion, string securityAnswer)
         {
             User user = GetUser(userUUID);
             if (user == null)
             {
-                return false;
+                return "Unknown user!";
             }
-            if (user.SecurityAnswer != securityAnswer)
-            {
-                return false;
-            }
-            user.SetPassword(newPassword);
-
-            UpdateUser(user);
-            return true;
+            return TryResetPassword(user, newPassword, securityQuestion, securityAnswer);
         }
 
         public bool UserExistByUsername(string username)
@@ -801,13 +802,19 @@ namespace WebApplication6
             SecurityAnswer = securityAnswer;
         }
 
-        public void SetPassword(string password)
+        public bool SetPassword(string password)
         {
             SHA256 sha256 = SHA256.Create();
             byte[] rawBytes = Encoding.UTF8.GetBytes(password);
             byte[] hashBytes = sha256.ComputeHash(rawBytes);
 
+            if (passwordHash != null && hashBytes.SequenceEqual(passwordHash))
+            {
+                return false;
+            }
+
             passwordHash = hashBytes;
+            return true;
         }
 
         public void SetBio(string bio)

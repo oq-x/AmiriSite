@@ -35,7 +35,7 @@ namespace WebApplication6
                 return;
             }
 
-            string errorResult = master.DataManager.TryResetPassword(user, newPassword.Text, securityQuestion.InnerText, user.SecurityAnswer);
+            string errorResult = master.DataManager.TryResetPassword(user, newPassword.Text, securityQuestion.InnerText, securityAnswer.Text);
 
             if (errorResult != "")
             {

@@ -8,7 +8,7 @@
     <main aria-labelledby="title" runat="server">
         <div class="main">
             <h1 id="title"><%:post.Title %></h1>
-            <h2 id="subtitle">Posted by <%:creator.Username %> on <%:post.CreatedAt.ToString("dd/MM/yyyy") %></h2>
+            <h2 id="subtitle">Posted by <a id="creatorName" href="User?n=<%:creator.Username %>"><%:creator.Username %></a> on <%:post.CreatedAt.ToString("dd/MM/yyyy") %></h2>
             <div class="content"><%= post.Content.Replace(Environment.NewLine, "<br />") %></div>
         </div>
         <div class="comments">

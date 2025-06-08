@@ -38,6 +38,16 @@ body::-webkit-scrollbar {
     overflow-wrap: break-word;
 }
 
+#creatorName {
+    transition: 0.2s;
+    color: white;
+    text-decoration: none;
+}
+
+#creatorName:hover {
+    color: #0093ff;
+}
+
 .monospace {
     font-family: monospace;
 }

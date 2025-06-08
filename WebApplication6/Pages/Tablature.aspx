@@ -8,7 +8,7 @@
     <main aria-labelledby="title" runat="server">
         <div class="main">
             <h1 id="title"><%:tab.ArtistName %> - <%: tab.SongName %></h1>
-            <h2 id="subtitle">Created by <%:creator.Username %> on <%:tab.CreatedAt.ToString("dd/MM/yyyy") %></h2>
+            <h2 id="subtitle">Created by <a id="creatorName" href="User?n=<%:creator.Username %>"><%:creator.Username %></a> on <%:tab.CreatedAt.ToString("dd/MM/yyyy") %></h2>
             <a class="inf"><strong>Album: </strong><%: tab.AlbumName %> (<%: tab.ReleaseYear %>)</a><br />
             <a class="inf"><strong>Tuning: </strong><%: tab.TuningType %></a><br />
             <a class="inf"><strong>Difficulty: </strong><%: tab.Difficulty %></a><br />

@@ -7,7 +7,8 @@ namespace WebApplication6
 {
     public class Global : HttpApplication
     {
-        public DataManager DataManager => new DataManager("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\oq\\source\\repos\\WebApplication6\\WebApplication6\\App_Data\\Database1.mdf;Integrated Security=True");
+        public const string conString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database1.mdf;Integrated Security=True";
+        public DataManager DataManager => new DataManager(conString);
         void Application_Start(object sender, EventArgs e)
         {
             RouteConfig.RegisterRoutes(RouteTable.Routes);

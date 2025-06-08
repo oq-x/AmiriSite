@@ -44,6 +44,7 @@ function register(e) {
     if (passwordInput.value.length < 8) {
         setError("Password must be at least 8 characters long!")
         e.preventDefault()
+        return
     } else {
         setError("")
     }
@@ -52,6 +53,7 @@ function register(e) {
     if (phoneInput.value == null || !phoneInput.checkValidity()) {
         setError("Phone number must be in this format: 0XX-XXXXXXX")
         e.preventDefault()
+        return
     } else {
         setError("")
     }
@@ -60,6 +62,7 @@ function register(e) {
     if (!gender) {
         setError("You must select a gender!")
         e.preventDefault()
+        return
     } else {
         setError("")
         window.hiddenGender.value = gender.id;

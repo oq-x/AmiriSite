@@ -34,6 +34,11 @@ namespace WebApplication6
                 error.InnerText = "Please fill in all fields!";
                 return;
             }
+            if (newPassword.Text.Length < 8)
+            {
+                error.InnerText = "Password must be at least 8 characters long!";
+                return;
+            }
 
             string errorResult = master.DataManager.TryResetPassword(user, newPassword.Text, securityQuestion.InnerText, securityAnswer.Text);
 

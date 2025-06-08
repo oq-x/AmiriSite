@@ -2,7 +2,6 @@
  * Login function
  * @param {MouseEvent} e
  */
-
 function register(e) {
     const emailInput = document.getElementById("email")
     if (emailInput.value == "" || !emailInput.checkValidity()) {
@@ -52,6 +51,15 @@ function register(e) {
     const phoneInput = document.getElementById("phone")
     if (phoneInput.value === "" || !phoneInput.checkValidity()) {
         setError("Phone number must be in this format: 0XX-XXXXXXX")
+        e.preventDefault()
+        return
+    } else {
+        setError("")
+    }
+
+    const birthdayInput = document.getElementById("birthday")
+    if (birthdayInput.value === "" || !birthdayInput.checkValidity()) {
+        setError("You must input your birthday")
         e.preventDefault()
         return
     } else {

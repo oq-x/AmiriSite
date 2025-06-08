@@ -50,7 +50,7 @@ function register(e) {
     }
 
     const phoneInput = document.getElementById("phone")
-    if (phoneInput.value == null || !phoneInput.checkValidity()) {
+    if (phoneInput.value === "" || !phoneInput.checkValidity()) {
         setError("Phone number must be in this format: 0XX-XXXXXXX")
         e.preventDefault()
         return
